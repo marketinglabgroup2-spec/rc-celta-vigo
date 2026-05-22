@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>¡Avísame! — RC Celta</title>
+    <!-- GA4: initialise dataLayer and consent defaults before any script loads.
+         The gtag.js loader is injected only after the user accepts cookies. -->
+    <script>
+      var GA_ID = 'G-5L6N62LLES';
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('consent', 'default', { analytics_storage: 'denied' });
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -558,7 +567,9 @@
           GDPR:       'yes',
         });
 
-        const cbName = 'mc_cb_' + Date.now();
+        const eventId   = this.event_id.value;
+        const eventName = this.event_name.value;
+        const cbName    = 'mc_cb_' + Date.now();
 
         const cleanup = () => {
           delete window[cbName];
@@ -569,8 +580,8 @@
         const timer = setTimeout(() => {
           if (window[cbName]) {
             cleanup();
-            btn.disabled    = false;
-            btn.textContent = '¡Avísame!';
+            btn.disabled      = false;
+            btn.textContent   = '¡Avísame!';
             msg.className     = 'form-msg error';
             msg.textContent   = 'Error: tiempo de espera agotado. Inténtalo de nuevo.';
             msg.style.display = 'block';
@@ -583,7 +594,22 @@
           btn.disabled    = false;
           btn.textContent = '¡Avísame!';
 
-          if (data.result === 'success') {
+          const isDuplicate = data.result !== 'success' &&
+                              typeof data.msg === 'string' &&
+                              data.msg.toLowerCase().includes('already subscribed');
+
+          if (data.result === 'success' || isDuplicate) {
+            if (typeof window.gtag === 'function') {
+              gtag('event', 'generate_lead', {
+                method:       'avisame_form',
+                event_id:     eventId,
+                event_name:   eventName,
+                grada_id:     gradaId,
+                grada_name:   gradaName,
+                is_duplicate: isDuplicate,
+                locale:       navigator.language,
+              });
+            }
             window.location.href = 'thankyou.html';
           } else {
             msg.className     = 'form-msg error';
@@ -652,16 +678,12 @@
     </div>
 
     <script>
-      const GA_ID = 'G-5L6N62LLES';
-
       function loadGA() {
+        gtag('consent', 'update', { analytics_storage: 'granted' });
         const s = document.createElement('script');
         s.src   = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
         s.async = true;
         document.head.appendChild(s);
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){ dataLayer.push(arguments); }
-        window.gtag = gtag;
         gtag('js', new Date());
         gtag('config', GA_ID);
       }
