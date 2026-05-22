@@ -543,6 +543,8 @@
         btn.textContent   = 'Enviando…';
         msg.style.display = 'none';
 
+        // Audience has double opt-in enabled — Mailchimp adds contacts as
+        // "pending" and sends a confirmation email before activating them.
         const params = new URLSearchParams({
           u:          'e0d9cba430ce4cffedcb81d70',
           id:         '9bae197681',
