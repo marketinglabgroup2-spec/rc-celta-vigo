@@ -599,5 +599,94 @@
         document.body.appendChild(script);
       });
     </script>
+
+    <!-- Cookie consent -->
+    <style>
+      #cookie-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--navy);
+        border-top: 2px solid var(--celeste);
+        color: var(--gray-400);
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        z-index: 9999;
+        font-size: 0.875rem;
+      }
+      #cookie-banner p { margin: 0; max-width: 640px; line-height: 1.5; }
+      #cookie-banner a { color: var(--celeste); text-decoration: none; }
+      #cookie-banner a:hover { text-decoration: underline; }
+      .cookie-btns { display: flex; gap: 0.75rem; flex-shrink: 0; }
+      .cookie-btns button {
+        padding: 0.55rem 1.25rem;
+        border-radius: 6px;
+        border: none;
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+      #cookie-accept { background: var(--celeste); color: var(--white); }
+      #cookie-accept:hover { background: var(--celeste-dark); }
+      #cookie-reject { background: transparent; color: var(--gray-400); border: 1.5px solid var(--gray-600) !important; }
+      #cookie-reject:hover { border-color: var(--gray-400) !important; color: var(--white); }
+    </style>
+
+    <div id="cookie-banner" role="dialog" aria-label="Cookie consent" style="display:none">
+      <p>
+        Usamos cookies de Google Analytics para analizar el tráfico y mejorar la experiencia.
+        Puedes aceptar o rechazar su uso.
+        <a href="/privacidad" target="_blank" rel="noopener">Más información</a>.
+      </p>
+      <div class="cookie-btns">
+        <button id="cookie-reject">Rechazar</button>
+        <button id="cookie-accept">Aceptar</button>
+      </div>
+    </div>
+
+    <script>
+      const GA_ID = 'G-XXXXXXXXXX';
+
+      function loadGA() {
+        const s = document.createElement('script');
+        s.src   = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+        s.async = true;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', GA_ID);
+      }
+
+      (function () {
+        const consent = localStorage.getItem('cookie_consent');
+        const banner  = document.getElementById('cookie-banner');
+
+        if (consent === 'accepted') { loadGA(); return; }
+        if (consent === 'rejected') { return; }
+
+        banner.style.display = 'flex';
+
+        document.getElementById('cookie-accept').addEventListener('click', function () {
+          localStorage.setItem('cookie_consent', 'accepted');
+          banner.style.display = 'none';
+          loadGA();
+        });
+
+        document.getElementById('cookie-reject').addEventListener('click', function () {
+          localStorage.setItem('cookie_consent', 'rejected');
+          banner.style.display = 'none';
+        });
+      })();
+    </script>
   </body>
 </html>
