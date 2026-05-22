@@ -532,51 +532,71 @@
       msg.className = 'form-msg';
       btn.after(msg);
 
-      form.addEventListener('submit', async function (event) {
+      form.addEventListener('submit', function (event) {
         event.preventDefault();
 
         const gradaSelect = this.grada;
         const gradaId     = gradaSelect.value;
         const gradaName   = gradaSelect.options[gradaSelect.selectedIndex]?.text ?? '';
 
-        const payload = {
-          nombre:     this.nombre.value.trim(),
-          apellidos:  this.apellidos.value.trim(),
-          email:      this.email.value.trim(),
-          event_id:   this.event_id.value,
-          event_name: this.event_name.value,
-          grada_id:   gradaId,
-          grada_name: gradaName,
-        };
-
-        btn.disabled    = true;
-        btn.textContent = 'Enviando…';
+        btn.disabled      = true;
+        btn.textContent   = 'Enviando…';
         msg.style.display = 'none';
 
-        try {
-          const res  = await fetch('/subscribe', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify(payload),
-          });
-          const data = await res.json();
+        const params = new URLSearchParams({
+          u:          '6f8933e3091c38d1e9303fddc',
+          id:         'PASTE_OLD_MAILCHIMP_LIST_HERE',
+          EMAIL:      this.email.value.trim(),
+          FNAME:      this.nombre.value.trim(),
+          LNAME:      this.apellidos.value.trim(),
+          EVENT_ID:   this.event_id.value,
+          EVENT_NAME: this.event_name.value,
+          GRADA_ID:   gradaId,
+          GRADA_NAME: gradaName,
+          GDPR:       'yes',
+        });
 
-          if (data.ok) {
+        const cbName = 'mc_cb_' + Date.now();
+
+        const cleanup = () => {
+          delete window[cbName];
+          const el = document.getElementById(cbName);
+          if (el) el.remove();
+        };
+
+        const timer = setTimeout(() => {
+          if (window[cbName]) {
+            cleanup();
+            btn.disabled    = false;
+            btn.textContent = '¡Avísame!';
+            msg.className     = 'form-msg error';
+            msg.textContent   = 'Error: tiempo de espera agotado. Inténtalo de nuevo.';
+            msg.style.display = 'block';
+          }
+        }, 10000);
+
+        window[cbName] = function (data) {
+          clearTimeout(timer);
+          cleanup();
+          btn.disabled    = false;
+          btn.textContent = '¡Avísame!';
+
+          if (data.result === 'success') {
             msg.className     = 'form-msg success';
-            msg.textContent   = data.message || '¡Registrado correctamente!';
+            msg.textContent   = '¡Te avisaremos en cuanto salgan las entradas!';
             msg.style.display = 'block';
             form.reset();
           } else {
-            throw new Error(data.error || 'Error desconocido');
+            msg.className     = 'form-msg error';
+            msg.textContent   = 'Error: ' + (data.msg || 'Error desconocido');
+            msg.style.display = 'block';
           }
-        } catch (err) {
-          msg.className     = 'form-msg error';
-          msg.textContent   = `Error: ${err.message}`;
-          msg.style.display = 'block';
-        } finally {
-          btn.disabled    = false;
-          btn.textContent = '¡Avísame!';
-        }
+        };
+
+        const script  = document.createElement('script');
+        script.id     = cbName;
+        script.src    = 'https://us17.list-manage.com/subscribe/post-json?' + params.toString() + '&c=' + cbName;
+        document.body.appendChild(script);
       });
     </script>
   </body>
