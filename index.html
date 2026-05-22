@@ -584,10 +584,7 @@
           btn.textContent = '¡Avísame!';
 
           if (data.result === 'success') {
-            msg.className     = 'form-msg success';
-            msg.textContent   = '¡Te avisaremos en cuanto salgan las entradas!';
-            msg.style.display = 'block';
-            form.reset();
+            window.location.href = 'thankyou.html';
           } else {
             msg.className     = 'form-msg error';
             msg.textContent   = 'Error: ' + (data.msg || 'Error desconocido');
