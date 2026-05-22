@@ -544,8 +544,8 @@
         msg.style.display = 'none';
 
         const params = new URLSearchParams({
-          u:          '6f8933e3091c38d1e9303fddc',
-          id:         'PASTE_OLD_MAILCHIMP_LIST_HERE',
+          u:          'e0d9cba430ce4cffedcb81d70',
+          id:         '9bae197681',
           EMAIL:      this.email.value.trim(),
           FNAME:      this.nombre.value.trim(),
           LNAME:      this.apellidos.value.trim(),
@@ -595,7 +595,7 @@
 
         const script  = document.createElement('script');
         script.id     = cbName;
-        script.src    = 'https://us17.list-manage.com/subscribe/post-json?' + params.toString() + '&c=' + cbName;
+        script.src    = 'https://us6.list-manage.com/subscribe/post-json?' + params.toString() + '&c=' + cbName;
         document.body.appendChild(script);
       });
     </script>
