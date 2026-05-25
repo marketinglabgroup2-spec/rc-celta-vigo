@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>¡Avísame! — RC Celta</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      /* ── Brand tokens ── */
+      :root {
+        --celeste:      #6cace4;
+        --celeste-dark: #4a8fc7;
+        --red:          #d50032;
+        --gold:         #c09a4e;
+        --navy:         #0d1b2a;
+        --navy-light:   #162535;
+        --white:        #ffffff;
+        --gray-100:     #f4f6f9;
+        --gray-200:     #e4eaf1;
+        --gray-400:     #8fa3b8;
+        --gray-600:     #4a5e70;
+        --text:         #1a2a3a;
+      }
+
+      /* ── Reset ── */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: 'Barlow', system-ui, sans-serif;
+        color: var(--text);
+        background: var(--celeste);
+        line-height: 1.6;
+      }
+
+      /* ── Crest ── */
+      .celta-crest {
+        display: block;
+        width: 120px;
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto 1.75rem;
+        filter: brightness(0) invert(1);
+      }
+
+      /* ── Hero ── */
+      header {
+        background: transparent;
+        color: var(--white);
+        text-align: center;
+        padding: 4.5rem 1.5rem 3.5rem;
+      }
+
+      header section { max-width: 640px; margin: 0 auto; }
+
+      header figcaption { display: none; }
+
+      header h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: var(--white);
+        margin-bottom: 0.75rem;
+      }
+
+      header p {
+        font-size: 1.05rem;
+        color: var(--gray-400);
+        max-width: 440px;
+        margin: 0 auto;
+      }
+
+      /* ── Main ── */
+      main {
+        padding: 3rem 1.5rem 4rem;
+      }
+
+      main section {
+        max-width: 520px;
+        margin: 0 auto;
+        background: var(--white);
+        border-radius: 12px;
+        padding: 2.5rem 2.75rem;
+        box-shadow: 0 4px 32px rgba(13, 27, 42, 0.1);
+      }
+
+      /* ── Form layout ── */
+      #avisame-form fieldset {
+        border: none;
+        padding: 0;
+        margin: 0 0 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      #avisame-form legend {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--celeste);
+        margin-bottom: 0.75rem;
+      }
+
+      #avisame-form label {
+        display: flex;
+        flex-direction: column;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--gray-600);
+        gap: 0.35rem;
+      }
+
+      /* ── Inputs & select ── */
+      #avisame-form input[type="text"],
+      #avisame-form input[type="email"],
+      #avisame-form select {
+        width: 100%;
+        padding: 0.7rem 0.9rem;
+        border: 1.5px solid var(--gray-200);
+        border-radius: 6px;
+        font-size: 0.975rem;
+        font-family: inherit;
+        background: var(--white);
+        color: var(--text);
+        appearance: none;
+        -webkit-appearance: none;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      #avisame-form input[type="text"]:focus,
+      #avisame-form input[type="email"]:focus,
+      #avisame-form select:focus {
+        outline: none;
+        border-color: var(--celeste);
+        box-shadow: 0 0 0 3px rgba(108, 172, 228, 0.18);
+      }
+
+      #avisame-form input::placeholder { color: var(--gray-400); }
+
+      /* ── Select chevron ── */
+      #avisame-form select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236cace4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.9rem center;
+        padding-right: 2.5rem;
+        cursor: pointer;
+      }
+
+      /* ── Checkbox row ── */
+      #avisame-form fieldset:has(#privacidad) label {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 0.6rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 400;
+        color: var(--gray-600);
+        line-height: 1.5;
+      }
+
+      #avisame-form input[type="checkbox"] {
+        margin-top: 0.2rem;
+        flex-shrink: 0;
+        width: 1rem;
+        height: 1rem;
+        cursor: pointer;
+        accent-color: var(--celeste);
+      }
+
+      #avisame-form a {
+        color: var(--celeste);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      #avisame-form a:hover { text-decoration: underline; }
+
+      /* ── Submit button ── */
+      #avisame-form button[type="submit"] {
+        width: 100%;
+        padding: 0.9rem 2rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        font-family: inherit;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 6px;
+        background: var(--celeste);
+        color: var(--white);
+        cursor: pointer;
+        transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+      }
+
+      #avisame-form button[type="submit"]:hover {
+        background: var(--celeste-dark);
+        box-shadow: 0 6px 20px rgba(108, 172, 228, 0.4);
+      }
+
+      #avisame-form button[type="submit"]:active {
+        transform: translateY(1px);
+        box-shadow: none;
+      }
+
+      /* ── Footer ── */
+      footer {
+        background: var(--navy);
+        border-top: 1px solid var(--navy-light);
+        color: var(--gray-400);
+        text-align: center;
+        padding: 1.5rem;
+        font-size: 0.8rem;
+        letter-spacing: 0.02em;
+      }
+
+      /* ── Mobile ── */
+      @media (max-width: 480px) {
+        header { padding: 3rem 1.25rem 2.5rem; }
+
+        main section {
+          padding: 1.75rem 1.25rem;
+          border-radius: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <section aria-label="Hero">
+        <figure>
+          <img
+            src="assets/celta-crest.svg"
+            alt="Escudo del RC Celta de Vigo"
+            class="celta-crest"
+          />
+          <figcaption>RC Celta de Vigo</figcaption>
+        </figure>
+        <h1>¡Avísame!</h1>
+        <p>
+          Déjanos tus datos y te avisaremos en cuanto haya entradas disponibles
+          para tu grada.
+        </p>
+      </section>
+    </header>
+    <!-- MATCH_INFO_START -->
+    <section aria-label="Información del partido" class="match-banner">
+      <style>
+        .match-banner {
+          background: #dce8f5;
+          padding: 1.25rem 1.5rem;
+        }
+        .match-card {
+          background: #fff;
+          border-radius: 12px;
+          padding: 1.25rem 1.5rem;
+          max-width: 860px;
+          margin: 0 auto;
+          box-shadow: 0 2px 12px rgba(13,27,42,0.08);
+        }
+        .match-card-top {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 1rem;
+          margin-bottom: 0.6rem;
+        }
+        .match-event-name {
+          font-family: 'Barlow', system-ui, sans-serif;
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #1a2a3a;
+        }
+        .match-subtitle {
+          font-family: 'Barlow', system-ui, sans-serif;
+          font-size: 0.8rem;
+          font-weight: 500;
+          color: #8fa3b8;
+          margin-top: 0.15rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        .match-on-sale {
+          font-family: 'Barlow', system-ui, sans-serif;
+          font-size: 0.7rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          border: 1.5px solid #2ea043;
+          color: #2ea043;
+          border-radius: 20px;
+          padding: 0.25rem 0.75rem;
+          white-space: nowrap;
+        }
+        .match-meta-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1.5rem;
+          margin-top: 0.75rem;
+        }
+        .match-meta-item {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          font-family: 'Barlow', system-ui, sans-serif;
+          font-size: 0.875rem;
+          color: #4a5e70;
+        }
+        .match-meta-item svg { color: #6cace4; flex-shrink: 0; }
+        .match-avail-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: #f0f5fb;
+          border-radius: 8px;
+          padding: 0.6rem 1rem;
+          margin-top: 1rem;
+          font-family: 'Barlow', system-ui, sans-serif;
+          font-size: 0.875rem;
+        }
+        .match-avail-label { color: #4a5e70; }
+        .match-avail-value { font-weight: 700; color: #6cace4; }
+        @media (max-width: 480px) {
+          .match-meta-row { gap: 0.75rem; }
+          .match-card-top { flex-direction: column; }
+        }
+      </style>
+      <div class="match-card">
+        <div class="match-card-top">
+          <div>
+            <div class="match-event-name">* API NUMBERED EVENT</div>
+            <div class="match-subtitle">GIRA 2019</div>
+          </div>
+          <div class="match-on-sale">On sale</div>
+        </div>
+        <div class="match-meta-row">
+          <span class="match-meta-item">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            12 feb 2020, 21:00
+          </span>
+          <span class="match-meta-item">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            Estadio Saprissa, Barcelona
+          </span>
+          <span class="match-meta-item">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/>
+            </svg>
+            10 € – 50 €
+          </span>
+        </div>
+        <div class="match-avail-row">
+          <span class="match-avail-label">Disponibilidad</span>
+          <span class="match-avail-value">14.372 / 14.786 (97%)</span>
+        </div>
+      </div>
+    </section>    <!-- MATCH_INFO_END -->
+
+    <main>
+      <section aria-label="Formulario de registro">
+        <form id="avisame-form" novalidate>
+          <!-- populated by generate-landing.js -->
+          <input type="hidden" name="event_id"   value="240895" />
+          <input type="hidden" name="event_name" value="* API NUMBERED EVENT" />
+          <fieldset>
+            <legend>Tus datos</legend>
+
+            <label for="nombre">Nombre</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              autocomplete="given-name"
+              required
+            />
+
+            <label for="apellidos">Apellidos</label>
+            <input
+              type="text"
+              id="apellidos"
+              name="apellidos"
+              autocomplete="family-name"
+              required
+            />
+
+            <label for="email">Correo electrónico</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              autocomplete="email"
+              required
+            />
+
+            <label for="grada">Grada</label>
+            <select id="grada" name="grada" required>
+              <option value="" disabled selected>Selecciona una grada</option>
+              <option value="224515">Sector 316</option>
+              <option value="224514">Sector 315</option>
+              <option value="224513">Sector 314</option>
+              <option value="224512">Sector 313</option>
+              <option value="224519">Sector 320</option>
+              <option value="224518">Sector 319</option>
+              <option value="224517">Sector 318</option>
+              <option value="224516">Sector 317</option>
+              <option value="224521">Sector 322</option>
+              <option value="224520">Sector 321</option>
+              <option value="224531">Sector 107 E</option>
+              <option value="224530">Sector 106 E</option>
+              <option value="224529">Sector 105 E</option>
+              <option value="224535">Sector 113 D</option>
+              <option value="224534">Sector 112 D</option>
+              <option value="224533">Sector 109 E</option>
+              <option value="224532">Sector 108 E</option>
+              <option value="224539">Sector 119 E</option>
+              <option value="224538">Sector 118 E</option>
+              <option value="224537">Sector 115 D</option>
+              <option value="224536">Sector 114 D</option>
+              <option value="224542">Sector 122 E</option>
+              <option value="224541">Sector 121 E</option>
+              <option value="224540">Sector 120 E</option>
+              <option value="224551">Pista - B3</option>
+              <option value="224550">Pista - B2</option>
+              <option value="224549">Pista - B1</option>
+              <option value="224555">Pista A2</option>
+              <option value="224554">Pista A1</option>
+              <option value="224553">Pista C2</option>
+              <option value="224552">Pista C1</option>
+              <option value="224559">Pista B3</option>
+              <option value="224558">Pista B2</option>
+              <option value="224557">Pista B1</option>
+              <option value="224556">Pista A3</option>
+              <option value="224563">Minusvalidos A</option>
+              <option value="224562">Minusvalidos B</option>
+              <option value="224561">Pista - C2</option>
+              <option value="224560">Pista - C1</option>
+              <option value="224455">Sector 107</option>
+              <option value="224454">Sector 106</option>
+              <option value="224453">Sector 105</option>
+              <option value="224459">Sector 111</option>
+              <option value="224458">Sector 110</option>
+              <option value="224457">Sector 109</option>
+              <option value="224456">Sector 108</option>
+              <option value="224463">Sector 116</option>
+              <option value="224462">Sector 114</option>
+              <option value="224461">Sector 113</option>
+              <option value="224460">Sector 112</option>
+              <option value="224467">Sector 119</option>
+              <option value="224466">Sector 118</option>
+              <option value="224465">Sector 117</option>
+              <option value="224464">Sector 115</option>
+              <option value="224470">Sector 122</option>
+              <option value="224469">Sector 121</option>
+              <option value="224468">Sector 120</option>
+              <option value="224479">Sector Palco / Llotja</option>
+              <option value="224483">Sector 210</option>
+              <option value="224482">Sector 209</option>
+              <option value="224481">Sector 208</option>
+              <option value="224480">Sector 207</option>
+              <option value="224487">Sector 214</option>
+              <option value="224486">Sector 213</option>
+              <option value="224485">Sector 212</option>
+              <option value="224484">Sector 211</option>
+              <option value="224491">Sector 218</option>
+              <option value="224490">Sector 217</option>
+              <option value="224489">Sector 216</option>
+              <option value="224488">Sector 215</option>
+              <option value="224495">Sector 222</option>
+              <option value="224494">Sector 221</option>
+              <option value="224493">Sector 220</option>
+              <option value="224492">Sector 219</option>
+              <option value="224507">Sector 308</option>
+              <option value="224506">Sector 307</option>
+              <option value="224505">Sector 306</option>
+              <option value="224504">Sector 305</option>
+              <option value="224511">Sector 312</option>
+              <option value="224510">Sector 311</option>
+              <option value="224509">Sector 310</option>
+              <option value="224508">Sector 309</option>
+            </select>
+          </fieldset>
+
+          <fieldset>
+            <legend>Privacidad</legend>
+            <label>
+              <input type="checkbox" id="privacidad" name="privacidad" required />
+              He leído y acepto la
+              <a href="/privacidad" target="_blank" rel="noopener noreferrer">
+                política de privacidad
+              </a>
+            </label>
+          </fieldset>
+
+          <button type="submit">¡Avísame!</button>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 RC Celta de Vigo. Todos los derechos reservados.</p>
+    </footer>
+
+    <style>
+      .form-msg {
+        display: none;
+        margin-top: 0.875rem;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-align: center;
+      }
+      .form-msg.success { background: #0d2818; color: #56d364; }
+      .form-msg.error   { background: #2d1117; color: #f85149; }
+    </style>
+
+    <script>
+      const form = document.getElementById('avisame-form');
+      const btn  = form.querySelector('button[type="submit"]');
+      const msg  = document.createElement('p');
+      msg.className = 'form-msg';
+      btn.after(msg);
+
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const gradaSelect = this.grada;
+        const gradaId     = gradaSelect.value;
+        const gradaName   = gradaSelect.options[gradaSelect.selectedIndex]?.text ?? '';
+
+        const payload = {
+          nombre:     this.nombre.value.trim(),
+          apellidos:  this.apellidos.value.trim(),
+          email:      this.email.value.trim(),
+          event_id:   this.event_id.value,
+          event_name: this.event_name.value,
+          grada_id:   gradaId,
+          grada_name: gradaName,
+        };
+
+        btn.disabled    = true;
+        btn.textContent = 'Enviando…';
+        msg.style.display = 'none';
+
+        try {
+          const res  = await fetch('/subscribe', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(payload),
+          });
+          const data = await res.json();
+
+          if (data.ok) {
+            msg.className     = 'form-msg success';
+            msg.textContent   = data.message || '¡Registrado correctamente!';
+            msg.style.display = 'block';
+            form.reset();
+          } else {
+            throw new Error(data.error || 'Error desconocido');
+          }
+        } catch (err) {
+          msg.className     = 'form-msg error';
+          msg.textContent   = `Error: ${err.message}`;
+          msg.style.display = 'block';
+        } finally {
+          btn.disabled    = false;
+          btn.textContent = '¡Avísame!';
+        }
+      });
+    </script>
+  </body>
+</html>
