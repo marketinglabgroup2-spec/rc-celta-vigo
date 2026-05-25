@@ -86,32 +86,43 @@
         box-shadow: 0 4px 32px rgba(13, 27, 42, 0.1);
       }
 
-      /* ── Form layout ── */
-      #avisame-form fieldset {
-        border: none;
-        padding: 0;
-        margin: 0 0 1.75rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
+      /* ── Form heading ── */
+      .form-heading {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 0.25rem;
       }
 
-      #avisame-form legend {
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: var(--celeste);
-        margin-bottom: 0.75rem;
+      .form-required-note {
+        font-size: 0.8rem;
+        color: var(--red);
+        margin-bottom: 1.5rem;
+      }
+
+      .req { color: var(--red); margin-left: 0.2rem; }
+
+      /* ── Form layout ── */
+      .form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .name-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
       }
 
       #avisame-form label {
         display: flex;
         flex-direction: column;
         font-size: 0.875rem;
-        font-weight: 500;
-        color: var(--gray-600);
-        gap: 0.35rem;
+        font-weight: 700;
+        color: var(--text);
+        gap: 0.4rem;
       }
 
       /* ── Inputs & select ── */
@@ -119,12 +130,12 @@
       #avisame-form input[type="email"],
       #avisame-form select {
         width: 100%;
-        padding: 0.7rem 0.9rem;
+        padding: 0.85rem 1rem;
         border: 1.5px solid var(--gray-200);
-        border-radius: 6px;
+        border-radius: 10px;
         font-size: 0.975rem;
         font-family: inherit;
-        background: var(--white);
+        background: var(--gray-100);
         color: var(--text);
         appearance: none;
         -webkit-appearance: none;
@@ -145,51 +156,67 @@
       #avisame-form select {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236cace4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
-        background-position: right 0.9rem center;
+        background-position: right 1rem center;
         padding-right: 2.5rem;
         cursor: pointer;
       }
 
-      /* ── Checkbox row ── */
-      #avisame-form fieldset:has(#privacidad) label {
+      /* ── Privacy card ── */
+      .privacy-card {
+        background: var(--gray-100);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .privacy-card label {
         flex-direction: row;
         align-items: flex-start;
-        gap: 0.6rem;
+        gap: 0.75rem;
         cursor: pointer;
-        font-size: 0.875rem;
         font-weight: 400;
-        color: var(--gray-600);
-        line-height: 1.5;
       }
 
       #avisame-form input[type="checkbox"] {
         margin-top: 0.2rem;
         flex-shrink: 0;
-        width: 1rem;
-        height: 1rem;
+        width: 1.1rem;
+        height: 1.1rem;
         cursor: pointer;
         accent-color: var(--celeste);
       }
 
-      #avisame-form a {
-        color: var(--celeste);
-        text-decoration: none;
-        font-weight: 500;
+      .privacy-title {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 0.35rem;
       }
 
-      #avisame-form a:hover { text-decoration: underline; }
+      .privacy-text {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--gray-600);
+        line-height: 1.55;
+      }
+
+      #avisame-form a {
+        color: var(--celeste);
+        text-decoration: underline;
+        font-weight: 500;
+      }
 
       /* ── Submit button ── */
       #avisame-form button[type="submit"] {
         width: 100%;
-        padding: 0.9rem 2rem;
-        font-size: 0.9rem;
+        padding: 1rem 2rem;
+        font-size: 1rem;
         font-weight: 700;
         font-family: inherit;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
+        letter-spacing: 0.04em;
         border: none;
-        border-radius: 6px;
+        border-radius: 10px;
         background: var(--celeste);
         color: var(--white);
         cursor: pointer;
@@ -204,6 +231,13 @@
       #avisame-form button[type="submit"]:active {
         transform: translateY(1px);
         box-shadow: none;
+      }
+
+      .form-disclaimer {
+        font-size: 0.8rem;
+        color: var(--gray-400);
+        text-align: center;
+        margin-top: 0.75rem;
       }
 
       /* ── Footer ── */
@@ -370,136 +404,152 @@
           <!-- populated by generate-landing.js -->
           <input type="hidden" name="event_id"   value="240895" />
           <input type="hidden" name="event_name" value="* API NUMBERED EVENT" />
-          <fieldset>
-            <legend>Tus datos</legend>
 
-            <label for="nombre">Nombre</label>
-            <input
-              type="text"
-              id="nombre"
-              name="nombre"
-              autocomplete="given-name"
-              required
-            />
+          <h2 class="form-heading">Déjanos tus datos</h2>
+          <p class="form-required-note">* Campos obligatorios</p>
 
-            <label for="apellidos">Apellidos</label>
-            <input
-              type="text"
-              id="apellidos"
-              name="apellidos"
-              autocomplete="family-name"
-              required
-            />
+          <div class="form-fields">
 
-            <label for="email">Correo electrónico</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              autocomplete="email"
-              required
-            />
+            <div>
+              <label for="email">Correo electrónico <span class="req">*</span></label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                autocomplete="email"
+                placeholder="tu@correo.com"
+                required
+              />
+            </div>
 
-            <label for="grada">Grada</label>
-            <select id="grada" name="grada" required>
-              <option value="" disabled selected>Selecciona una grada</option>
-              <option value="224515">Sector 316</option>
-              <option value="224514">Sector 315</option>
-              <option value="224513">Sector 314</option>
-              <option value="224512">Sector 313</option>
-              <option value="224519">Sector 320</option>
-              <option value="224518">Sector 319</option>
-              <option value="224517">Sector 318</option>
-              <option value="224516">Sector 317</option>
-              <option value="224521">Sector 322</option>
-              <option value="224520">Sector 321</option>
-              <option value="224531">Sector 107 E</option>
-              <option value="224530">Sector 106 E</option>
-              <option value="224529">Sector 105 E</option>
-              <option value="224535">Sector 113 D</option>
-              <option value="224534">Sector 112 D</option>
-              <option value="224533">Sector 109 E</option>
-              <option value="224532">Sector 108 E</option>
-              <option value="224539">Sector 119 E</option>
-              <option value="224538">Sector 118 E</option>
-              <option value="224537">Sector 115 D</option>
-              <option value="224536">Sector 114 D</option>
-              <option value="224542">Sector 122 E</option>
-              <option value="224541">Sector 121 E</option>
-              <option value="224540">Sector 120 E</option>
-              <option value="224551">Pista - B3</option>
-              <option value="224550">Pista - B2</option>
-              <option value="224549">Pista - B1</option>
-              <option value="224555">Pista A2</option>
-              <option value="224554">Pista A1</option>
-              <option value="224553">Pista C2</option>
-              <option value="224552">Pista C1</option>
-              <option value="224559">Pista B3</option>
-              <option value="224558">Pista B2</option>
-              <option value="224557">Pista B1</option>
-              <option value="224556">Pista A3</option>
-              <option value="224563">Minusvalidos A</option>
-              <option value="224562">Minusvalidos B</option>
-              <option value="224561">Pista - C2</option>
-              <option value="224560">Pista - C1</option>
-              <option value="224455">Sector 107</option>
-              <option value="224454">Sector 106</option>
-              <option value="224453">Sector 105</option>
-              <option value="224459">Sector 111</option>
-              <option value="224458">Sector 110</option>
-              <option value="224457">Sector 109</option>
-              <option value="224456">Sector 108</option>
-              <option value="224463">Sector 116</option>
-              <option value="224462">Sector 114</option>
-              <option value="224461">Sector 113</option>
-              <option value="224460">Sector 112</option>
-              <option value="224467">Sector 119</option>
-              <option value="224466">Sector 118</option>
-              <option value="224465">Sector 117</option>
-              <option value="224464">Sector 115</option>
-              <option value="224470">Sector 122</option>
-              <option value="224469">Sector 121</option>
-              <option value="224468">Sector 120</option>
-              <option value="224479">Sector Palco / Llotja</option>
-              <option value="224483">Sector 210</option>
-              <option value="224482">Sector 209</option>
-              <option value="224481">Sector 208</option>
-              <option value="224480">Sector 207</option>
-              <option value="224487">Sector 214</option>
-              <option value="224486">Sector 213</option>
-              <option value="224485">Sector 212</option>
-              <option value="224484">Sector 211</option>
-              <option value="224491">Sector 218</option>
-              <option value="224490">Sector 217</option>
-              <option value="224489">Sector 216</option>
-              <option value="224488">Sector 215</option>
-              <option value="224495">Sector 222</option>
-              <option value="224494">Sector 221</option>
-              <option value="224493">Sector 220</option>
-              <option value="224492">Sector 219</option>
-              <option value="224507">Sector 308</option>
-              <option value="224506">Sector 307</option>
-              <option value="224505">Sector 306</option>
-              <option value="224504">Sector 305</option>
-              <option value="224511">Sector 312</option>
-              <option value="224510">Sector 311</option>
-              <option value="224509">Sector 310</option>
-              <option value="224508">Sector 309</option>
-            </select>
-          </fieldset>
+            <div class="name-row">
+              <div>
+                <label for="nombre">Nombre <span class="req">*</span></label>
+                <input
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  autocomplete="given-name"
+                  placeholder="Nombre"
+                  required
+                />
+              </div>
+              <div>
+                <label for="apellidos">Apellidos <span class="req">*</span></label>
+                <input
+                  type="text"
+                  id="apellidos"
+                  name="apellidos"
+                  autocomplete="family-name"
+                  placeholder="Apellidos"
+                  required
+                />
+              </div>
+            </div>
 
-          <fieldset>
-            <legend>Privacidad</legend>
-            <label>
-              <input type="checkbox" id="privacidad" name="privacidad" required />
-              He leído y acepto la
-              <a href="/privacidad" target="_blank" rel="noopener noreferrer">
-                política de privacidad
-              </a>
-            </label>
-          </fieldset>
+            <div>
+              <label for="grada">Grada <span class="req">*</span></label>
+              <select id="grada" name="grada" required>
+                <option value="" disabled selected>Selecciona una grada</option>
+                <option value="224515">Sector 316</option>
+                <option value="224514">Sector 315</option>
+                <option value="224513">Sector 314</option>
+                <option value="224512">Sector 313</option>
+                <option value="224519">Sector 320</option>
+                <option value="224518">Sector 319</option>
+                <option value="224517">Sector 318</option>
+                <option value="224516">Sector 317</option>
+                <option value="224521">Sector 322</option>
+                <option value="224520">Sector 321</option>
+                <option value="224531">Sector 107 E</option>
+                <option value="224530">Sector 106 E</option>
+                <option value="224529">Sector 105 E</option>
+                <option value="224535">Sector 113 D</option>
+                <option value="224534">Sector 112 D</option>
+                <option value="224533">Sector 109 E</option>
+                <option value="224532">Sector 108 E</option>
+                <option value="224539">Sector 119 E</option>
+                <option value="224538">Sector 118 E</option>
+                <option value="224537">Sector 115 D</option>
+                <option value="224536">Sector 114 D</option>
+                <option value="224542">Sector 122 E</option>
+                <option value="224541">Sector 121 E</option>
+                <option value="224540">Sector 120 E</option>
+                <option value="224551">Pista - B3</option>
+                <option value="224550">Pista - B2</option>
+                <option value="224549">Pista - B1</option>
+                <option value="224555">Pista A2</option>
+                <option value="224554">Pista A1</option>
+                <option value="224553">Pista C2</option>
+                <option value="224552">Pista C1</option>
+                <option value="224559">Pista B3</option>
+                <option value="224558">Pista B2</option>
+                <option value="224557">Pista B1</option>
+                <option value="224556">Pista A3</option>
+                <option value="224563">Minusvalidos A</option>
+                <option value="224562">Minusvalidos B</option>
+                <option value="224561">Pista - C2</option>
+                <option value="224560">Pista - C1</option>
+                <option value="224455">Sector 107</option>
+                <option value="224454">Sector 106</option>
+                <option value="224453">Sector 105</option>
+                <option value="224459">Sector 111</option>
+                <option value="224458">Sector 110</option>
+                <option value="224457">Sector 109</option>
+                <option value="224456">Sector 108</option>
+                <option value="224463">Sector 116</option>
+                <option value="224462">Sector 114</option>
+                <option value="224461">Sector 113</option>
+                <option value="224460">Sector 112</option>
+                <option value="224467">Sector 119</option>
+                <option value="224466">Sector 118</option>
+                <option value="224465">Sector 117</option>
+                <option value="224464">Sector 115</option>
+                <option value="224470">Sector 122</option>
+                <option value="224469">Sector 121</option>
+                <option value="224468">Sector 120</option>
+                <option value="224479">Sector Palco / Llotja</option>
+                <option value="224483">Sector 210</option>
+                <option value="224482">Sector 209</option>
+                <option value="224481">Sector 208</option>
+                <option value="224480">Sector 207</option>
+                <option value="224487">Sector 214</option>
+                <option value="224486">Sector 213</option>
+                <option value="224485">Sector 212</option>
+                <option value="224484">Sector 211</option>
+                <option value="224491">Sector 218</option>
+                <option value="224490">Sector 217</option>
+                <option value="224489">Sector 216</option>
+                <option value="224488">Sector 215</option>
+                <option value="224495">Sector 222</option>
+                <option value="224494">Sector 221</option>
+                <option value="224493">Sector 220</option>
+                <option value="224492">Sector 219</option>
+                <option value="224507">Sector 308</option>
+                <option value="224506">Sector 307</option>
+                <option value="224505">Sector 306</option>
+                <option value="224504">Sector 305</option>
+                <option value="224511">Sector 312</option>
+                <option value="224510">Sector 311</option>
+                <option value="224509">Sector 310</option>
+                <option value="224508">Sector 309</option>
+              </select>
+            </div>
 
-          <button type="submit">¡Avísame!</button>
+            <div class="privacy-card">
+              <label style="display:flex; align-items:flex-start; gap:0.75rem; cursor:pointer;">
+                <input type="checkbox" id="privacidad" name="privacidad" required style="margin-top:0.2rem; flex-shrink:0;" />
+                <span>
+                  <span class="privacy-title">Quiero recibir el aviso por email <span class="req">*</span></span>
+                  <span class="privacy-text">Al marcar esta casilla, aceptas que RC Celta de Vigo utilice tu correo electrónico para enviarte un aviso puntual cuando haya entradas disponibles para el partido seleccionado. Tus datos se tratan conforme al RGPD y no se comparten con terceros. Puedes revocar tu consentimiento en cualquier momento.</span>
+                </span>
+              </label>
+            </div>
+
+          </div>
+
+          <button type="submit">Quiero recibir el aviso</button>
+          <p class="form-disclaimer">Este formulario no garantiza disponibilidad ni reserva de entrada.</p>
         </form>
       </section>
     </main>
