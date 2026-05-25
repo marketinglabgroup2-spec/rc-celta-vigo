@@ -66,9 +66,10 @@
 
       header p {
         font-size: 1.05rem;
-        color: var(--gray-400);
+        color: var(--white);
         max-width: 440px;
         margin: 0 auto;
+        opacity: 0.9;
       }
 
       /* ── Main ── */
@@ -249,16 +250,15 @@
     <section aria-label="Información del partido" class="match-banner">
       <style>
         .match-banner {
-          background: #dce8f5;
+          background: transparent;
           padding: 1.25rem 1.5rem;
         }
         .match-card {
-          background: #fff;
+          background: transparent;
           border-radius: 12px;
           padding: 1.25rem 1.5rem;
           max-width: 860px;
           margin: 0 auto;
-          box-shadow: 0 2px 12px rgba(13,27,42,0.08);
         }
         .match-card-top {
           display: flex;
@@ -271,13 +271,13 @@
           font-family: 'Barlow', system-ui, sans-serif;
           font-size: 1.1rem;
           font-weight: 700;
-          color: #1a2a3a;
+          color: #ffffff;
         }
         .match-subtitle {
           font-family: 'Barlow', system-ui, sans-serif;
           font-size: 0.8rem;
           font-weight: 500;
-          color: #8fa3b8;
+          color: rgba(255,255,255,0.7);
           margin-top: 0.15rem;
           text-transform: uppercase;
           letter-spacing: 0.05em;
@@ -288,8 +288,8 @@
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          border: 1.5px solid #2ea043;
-          color: #2ea043;
+          border: 1.5px solid rgba(255,255,255,0.8);
+          color: #ffffff;
           border-radius: 20px;
           padding: 0.25rem 0.75rem;
           white-space: nowrap;
@@ -306,22 +306,22 @@
           gap: 0.4rem;
           font-family: 'Barlow', system-ui, sans-serif;
           font-size: 0.875rem;
-          color: #4a5e70;
+          color: rgba(255,255,255,0.85);
         }
-        .match-meta-item svg { color: #6cace4; flex-shrink: 0; }
+        .match-meta-item svg { color: rgba(255,255,255,0.9); flex-shrink: 0; }
         .match-avail-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background: #f0f5fb;
+          background: rgba(255,255,255,0.15);
           border-radius: 8px;
           padding: 0.6rem 1rem;
           margin-top: 1rem;
           font-family: 'Barlow', system-ui, sans-serif;
           font-size: 0.875rem;
         }
-        .match-avail-label { color: #4a5e70; }
-        .match-avail-value { font-weight: 700; color: #6cace4; }
+        .match-avail-label { color: rgba(255,255,255,0.8); }
+        .match-avail-value { font-weight: 700; color: #ffffff; }
         @media (max-width: 480px) {
           .match-meta-row { gap: 0.75rem; }
           .match-card-top { flex-direction: column; }
