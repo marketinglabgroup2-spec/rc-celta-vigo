@@ -154,6 +154,79 @@
         .card { padding: 2rem 1.5rem; border-radius: 8px; }
         header { padding: 2rem 1.25rem 1.75rem; }
       }
+
+      /* ── Refer-a-friend additions ── */
+      .cards-stack {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        width: 100%;
+      }
+
+      .referral-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--gray-600);
+        margin-bottom: 0.35rem;
+        text-align: left;
+      }
+
+      .referral-input {
+        width: 100%;
+        padding: 0.7rem 0.9rem;
+        border: 1.5px solid var(--gray-200);
+        border-radius: 6px;
+        font-size: 0.975rem;
+        font-family: inherit;
+        background: var(--white);
+        color: var(--text);
+        appearance: none;
+        -webkit-appearance: none;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        margin-bottom: 1rem;
+      }
+
+      .referral-input:focus {
+        outline: none;
+        border-color: var(--celeste);
+        box-shadow: 0 0 0 3px rgba(108, 172, 228, 0.18);
+      }
+
+      .referral-input::placeholder { color: var(--gray-400); }
+
+      .referral-btn {
+        width: 100%;
+        padding: 0.9rem 2rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        font-family: inherit;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 6px;
+        background: #E4002B;
+        color: var(--white);
+        cursor: pointer;
+        transition: opacity 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+      }
+
+      .referral-btn:hover  { opacity: 0.88; box-shadow: 0 6px 20px rgba(228, 0, 43, 0.35); }
+      .referral-btn:active { transform: translateY(1px); box-shadow: none; }
+
+      .referral-msg {
+        display: none;
+        margin-top: 0.875rem;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-align: center;
+      }
+
+      .referral-msg.success { background: #0d2818; color: #56d364; }
+      .referral-msg.error   { background: #2d1117; color: #f85149; }
     </style>
   </head>
   <body>
@@ -163,25 +236,86 @@
     </header>
 
     <main>
-      <div class="card">
-        <div class="checkmark">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
+      <div class="cards-stack">
+
+        <div class="card">
+          <div class="checkmark">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+
+          <h2>¡Registro completado!</h2>
+          <p>Hemos recibido tu solicitud. <strong>Te avisaremos por correo electrónico</strong> en cuanto haya entradas disponibles para tu grada.</p>
+          <p>Revisa tu bandeja de entrada (y la carpeta de spam) para confirmar tu dirección de correo.</p>
+
+          <hr class="divider" />
+
+          <a href="index.html" class="back-link">Volver al inicio</a>
         </div>
 
-        <h2>¡Registro completado!</h2>
-        <p>Hemos recibido tu solicitud. <strong>Te avisaremos por correo electrónico</strong> en cuanto haya entradas disponibles para tu grada.</p>
-        <p>Revisa tu bandeja de entrada (y la carpeta de spam) para confirmar tu dirección de correo.</p>
+        <div class="card">
+          <h2>¿Conoces a alguien que también quiera entradas?</h2>
+          <p>Comparte el aviso con un amigo</p>
 
-        <hr class="divider" />
+          <hr class="divider" />
 
-        <a href="index.html" class="back-link">Volver al inicio</a>
+          <form id="referral-form" novalidate>
+            <label class="referral-label" for="referral-email">Correo electrónico de tu amigo/a</label>
+            <input
+              type="email"
+              id="referral-email"
+              class="referral-input"
+              placeholder="amigo@ejemplo.com"
+              required
+            />
+            <button type="submit" class="referral-btn">Enviar aviso</button>
+            <p class="referral-msg" id="referral-msg"></p>
+          </form>
+        </div>
+
       </div>
     </main>
 
     <footer>
       <p>&copy; 2026 RC Celta de Vigo. Todos los derechos reservados.</p>
     </footer>
+
+    <script>
+      document.getElementById('referral-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const emailInput = document.getElementById('referral-email');
+        const msgEl      = document.getElementById('referral-msg');
+        const btn        = this.querySelector('button[type="submit"]');
+        const friendEmail = emailInput.value.trim();
+
+        if (!friendEmail) {
+          msgEl.className     = 'referral-msg error';
+          msgEl.textContent   = 'Por favor, introduce un correo electrónico.';
+          msgEl.style.display = 'block';
+          return;
+        }
+
+        const subject = encodeURIComponent('Un amigo/a te recomienda estar al tanto de las entradas del RC Celta');
+        const body    = encodeURIComponent(
+          'Hola,\n\n' +
+          'Un amigo/a tuyo/a pensó que te gustaría recibir alertas cuando salgan nuevas entradas para los partidos del RC Celta de Vigo.\n\n' +
+          'Regístrate aquí y te avisaremos en cuanto haya disponibilidad para tu grada:\n' +
+          'https://marketinglabgroup2-spec.github.io/RC-Celta/landing.html\n\n' +
+          '¡Nos vemos en Balaídos!'
+        );
+
+        window.location.href = 'mailto:' + friendEmail + '?subject=' + subject + '&body=' + body;
+
+        btn.disabled        = true;
+        msgEl.className     = 'referral-msg success';
+        msgEl.textContent   = '¡Aviso enviado! Tu amigo/a recibirá el correo en breve.';
+        msgEl.style.display = 'block';
+        emailInput.value    = '';
+
+        setTimeout(function () { btn.disabled = false; }, 3000);
+      });
+    </script>
   </body>
 </html>
