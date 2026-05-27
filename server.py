@@ -214,17 +214,20 @@ def subscribe(nombre, apellidos, email, event_id, event_name, grada_id, grada_na
     # 1. Upsert member (subscribed status, all merge fields)
     subscriber_hash = hashlib.md5(email.lower().encode()).hexdigest()
 
+    # Merge tags match Mailchimp's auto-generated tags for our custom fields:
+    #   MMERGE3 = Event ID    MMERGE4 = Event name   MMERGE5 = Grada ID
+    #   MMERGE6 = Grada name  MMERGE7 = Referred by  MMERGE8 = GDPR consent
     merge_fields = {
-        'FNAME':      nombre,
-        'LNAME':      apellidos,
-        'EVENT_ID':   str(event_id),
-        'EVENT_NAME': event_name,
-        'GRADA_ID':   str(grada_id),
-        'GRADA_NAME': grada_name,
-        'GDPR':       'yes',
+        'FNAME':   nombre,
+        'LNAME':   apellidos,
+        'MMERGE3': str(event_id),
+        'MMERGE4': event_name,
+        'MMERGE5': str(grada_id),
+        'MMERGE6': grada_name,
+        'MMERGE8': 'yes',
     }
     if referrer_email:
-        merge_fields['REF_BY'] = referrer_email   # populated → triggers merge-field journey
+        merge_fields['MMERGE7'] = referrer_email   # populated → triggers merge-field journey
 
     # GDPR-safe: referred friends must double-opt-in (Mailchimp sends them a
     # confirmation email; they're only added to the list if they click).
