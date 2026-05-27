@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Refiere a un amigo — RC Celta</title>
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5L6N62LLES"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5L6N62LLES');
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --celeste:      #6cace4;
+        --celeste-dark: #4a8fc7;
+        --red:          #d50032;
+        --gold:         #c09a4e;
+        --navy:         #0d1b2a;
+        --navy-light:   #162535;
+        --white:        #ffffff;
+        --gray-100:     #f4f6f9;
+        --gray-200:     #e4eaf1;
+        --gray-400:     #8fa3b8;
+        --gray-600:     #4a5e70;
+        --text:         #1a2a3a;
+      }
+
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: 'Barlow', system-ui, sans-serif;
+        color: var(--text);
+        line-height: 1.6;
+        min-height: 100vh;
+        background-color: #050a14;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background: url("assets/a64c5f1dfeed0a123f36f369b5be59c7.jpg") center top / cover no-repeat;
+        animation:
+          kenBurns 22s ease-in-out infinite alternate,
+          flicker  7s steps(60, end) infinite;
+        will-change: transform, filter;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(ellipse 60% 35% at 50% 18%, rgba(255, 248, 220, 0.28) 0%, transparent 65%),
+          linear-gradient(180deg, rgba(5, 10, 20, 0.55) 0%, rgba(5, 10, 20, 0.25) 35%, rgba(5, 10, 20, 0.75) 100%);
+        animation: lightPulse 2.4s ease-in-out infinite;
+      }
+
+      @keyframes kenBurns {
+        0%   { transform: scale(1)    translate(0%, 0%); }
+        50%  { transform: scale(1.12) translate(1.5%, -1%); }
+        100% { transform: scale(1.18) translate(-2.5%, -2%); }
+      }
+
+      @keyframes lightPulse {
+        0%, 100% { opacity: 1; }
+        25%      { opacity: 0.80; }
+        50%      { opacity: 1; }
+        72%      { opacity: 0.88; }
+      }
+
+      @keyframes flicker {
+        0%, 100%       { filter: brightness(1)    contrast(1); }
+        4%             { filter: brightness(1.18) contrast(1.05); }
+        5%, 7%         { filter: brightness(0.78) contrast(0.95); }
+        8%             { filter: brightness(1.10); }
+        18%            { filter: brightness(1); }
+        19%, 21%       { filter: brightness(0.85); }
+        20%            { filter: brightness(1.22); }
+        46%            { filter: brightness(1); }
+        47%            { filter: brightness(1.30) contrast(1.08); }
+        48%, 50%       { filter: brightness(0.72); }
+        51%            { filter: brightness(1.15); }
+        74%            { filter: brightness(1); }
+        75%, 76%       { filter: brightness(0.82); }
+        77%            { filter: brightness(1.12); }
+        89%            { filter: brightness(0.92); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        body::before, body::after { animation: none; }
+      }
+
+      header, main, footer { position: relative; z-index: 1; }
+
+      .celta-crest {
+        display: block;
+        width: 300px;
+        max-width: 80%;
+        height: auto;
+        margin: 0 auto 1.75rem;
+      }
+
+      header {
+        background: transparent;
+        color: var(--white);
+        text-align: center;
+        padding: 4.5rem 1.5rem 2.5rem;
+      }
+
+      header section { max-width: 640px; margin: 0 auto; }
+
+      header figcaption { display: none; }
+
+      header h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: var(--white);
+        margin-bottom: 0.75rem;
+      }
+
+      header p {
+        font-size: 1.05rem;
+        color: var(--white);
+        max-width: 480px;
+        margin: 0 auto;
+        opacity: 0.9;
+      }
+
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: rgba(255, 255, 255, 0.75);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        margin-bottom: 1.75rem;
+        transition: color 0.15s;
+      }
+      .back-link:hover { color: var(--white); }
+
+      main { padding: 1.25rem 1.5rem 4rem; }
+
+      main section {
+        max-width: 640px;
+        margin: 0 auto;
+        background: var(--white);
+        border-radius: 12px;
+        padding: 2.5rem 2.75rem;
+        box-shadow: 0 4px 32px rgba(13, 27, 42, 0.1);
+      }
+
+      .form-heading {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 0.25rem;
+      }
+
+      .form-required-note {
+        font-size: 0.8rem;
+        color: var(--red);
+        margin-bottom: 1.5rem;
+      }
+
+      .form-subheading {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.25rem;
+      }
+
+      .section-divider {
+        height: 1px;
+        background: var(--gray-200);
+        margin: 0.5rem 0 0.25rem;
+      }
+
+      .req { color: var(--red); }
+
+      .form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .name-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      #refer-form label {
+        display: flex;
+        flex-direction: column;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--text);
+        gap: 0.4rem;
+      }
+
+      #refer-form input[type="text"],
+      #refer-form input[type="email"],
+      #refer-form select {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border: 1.5px solid var(--gray-200);
+        border-radius: 10px;
+        font-size: 0.975rem;
+        font-family: inherit;
+        background: var(--gray-100);
+        color: var(--text);
+        appearance: none;
+        -webkit-appearance: none;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      #refer-form input[type="text"]:focus,
+      #refer-form input[type="email"]:focus,
+      #refer-form select:focus {
+        outline: none;
+        border-color: var(--celeste);
+        box-shadow: 0 0 0 3px rgba(108, 172, 228, 0.18);
+      }
+
+      #refer-form input::placeholder { color: var(--gray-400); }
+
+      #refer-form select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236cace4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.5rem;
+        cursor: pointer;
+      }
+
+      .privacy-card {
+        background: var(--gray-100);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .privacy-card label {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 0.75rem;
+        cursor: pointer;
+        font-weight: 400;
+      }
+
+      #refer-form input[type="checkbox"] {
+        margin-top: 0.2rem;
+        flex-shrink: 0;
+        width: 1.1rem;
+        height: 1.1rem;
+        cursor: pointer;
+        accent-color: var(--celeste);
+      }
+
+      .privacy-title {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 0.35rem;
+      }
+
+      .privacy-text {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--gray-600);
+        line-height: 1.55;
+      }
+
+      #refer-form a {
+        color: var(--celeste);
+        text-decoration: underline;
+        font-weight: 500;
+      }
+
+      #refer-form button[type="submit"] {
+        width: 100%;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 700;
+        font-family: inherit;
+        letter-spacing: 0.04em;
+        border: none;
+        border-radius: 10px;
+        background: var(--celeste);
+        color: var(--white);
+        cursor: pointer;
+        transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+      }
+
+      #refer-form button[type="submit"]:hover {
+        background: var(--celeste-dark);
+        box-shadow: 0 6px 20px rgba(108, 172, 228, 0.4);
+      }
+
+      #refer-form button[type="submit"]:active {
+        transform: translateY(1px);
+        box-shadow: none;
+      }
+
+      .form-disclaimer {
+        font-size: 0.8rem;
+        color: var(--gray-400);
+        text-align: center;
+        margin-top: 0.75rem;
+      }
+
+      footer {
+        background: var(--navy);
+        border-top: 1px solid var(--navy-light);
+        color: var(--gray-400);
+        text-align: center;
+        padding: 1.5rem;
+        font-size: 0.8rem;
+        letter-spacing: 0.02em;
+      }
+
+      .form-msg {
+        display: none;
+        margin-top: 0.875rem;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-align: center;
+      }
+      .form-msg.success { background: #0d2818; color: #56d364; }
+      .form-msg.error   { background: #2d1117; color: #f85149; }
+
+      @media (max-width: 480px) {
+        header { padding: 3rem 1.25rem 2rem; }
+        main section { padding: 1.75rem 1.25rem; border-radius: 8px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <section aria-label="Refer a friend hero">
+        <a href="landing.html" class="back-link">← Volver al aviso</a>
+        <figure>
+          <img
+            src="assets/celta-horizontal.png"
+            alt="RC Celta de Vigo"
+            class="celta-crest"
+          />
+          <figcaption>RC Celta de Vigo</figcaption>
+        </figure>
+        <h1>Refiere a un amigo</h1>
+        <p>
+          Comparte el aviso con un amigo y le avisaremos a ambos en cuanto haya
+          entradas disponibles.
+        </p>
+      </section>
+    </header>
+
+    <main>
+      <section aria-label="Formulario de referido">
+        <form id="refer-form" novalidate>
+          <input type="hidden" name="event_id"   value="240895" />
+          <input type="hidden" name="event_name" value="* API NUMBERED EVENT" />
+
+          <h2 class="form-heading">Refiere a un amigo</h2>
+          <p class="form-required-note">* Campos obligatorios</p>
+
+          <div class="form-fields">
+
+            <div>
+              <label for="referrer_email"><span>Tu correo<span class="req">*</span></span></label>
+              <input
+                type="email"
+                id="referrer_email"
+                name="referrer_email"
+                autocomplete="email"
+                placeholder="tu@correo.com"
+                required
+              />
+              <small style="font-size:0.78rem; color:var(--gray-600); margin-top:0.35rem; font-weight:400;">
+                Te avisaremos a ti también cuando tu amigo se registre.
+              </small>
+            </div>
+
+            <div class="section-divider" aria-hidden="true"></div>
+
+            <h3 class="form-subheading">Datos de tu amigo</h3>
+
+            <div>
+              <label for="email"><span>Correo del amigo<span class="req">*</span></span></label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                autocomplete="off"
+                placeholder="amigo@correo.com"
+                required
+              />
+            </div>
+
+            <div class="name-row">
+              <div>
+                <label for="nombre"><span>Nombre<span class="req">*</span></span></label>
+                <input
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  autocomplete="off"
+                  placeholder="Nombre"
+                  required
+                />
+              </div>
+              <div>
+                <label for="apellidos"><span>Apellidos<span class="req">*</span></span></label>
+                <input
+                  type="text"
+                  id="apellidos"
+                  name="apellidos"
+                  autocomplete="off"
+                  placeholder="Apellidos"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="grada"><span>Grada<span class="req">*</span></span></label>
+              <select id="grada" name="grada" required>
+                <option value="" disabled selected>Selecciona una grada</option>
+                <option value="224515">Sector 316</option>
+                <option value="224514">Sector 315</option>
+                <option value="224513">Sector 314</option>
+                <option value="224512">Sector 313</option>
+                <option value="224519">Sector 320</option>
+                <option value="224518">Sector 319</option>
+                <option value="224517">Sector 318</option>
+                <option value="224516">Sector 317</option>
+                <option value="224521">Sector 322</option>
+                <option value="224520">Sector 321</option>
+                <option value="224531">Sector 107 E</option>
+                <option value="224530">Sector 106 E</option>
+                <option value="224529">Sector 105 E</option>
+                <option value="224535">Sector 113 D</option>
+                <option value="224534">Sector 112 D</option>
+                <option value="224533">Sector 109 E</option>
+                <option value="224532">Sector 108 E</option>
+                <option value="224539">Sector 119 E</option>
+                <option value="224538">Sector 118 E</option>
+                <option value="224537">Sector 115 D</option>
+                <option value="224536">Sector 114 D</option>
+                <option value="224542">Sector 122 E</option>
+                <option value="224541">Sector 121 E</option>
+                <option value="224540">Sector 120 E</option>
+                <option value="224551">Pista - B3</option>
+                <option value="224550">Pista - B2</option>
+                <option value="224549">Pista - B1</option>
+                <option value="224555">Pista A2</option>
+                <option value="224554">Pista A1</option>
+                <option value="224553">Pista C2</option>
+                <option value="224552">Pista C1</option>
+                <option value="224559">Pista B3</option>
+                <option value="224558">Pista B2</option>
+                <option value="224557">Pista B1</option>
+                <option value="224556">Pista A3</option>
+                <option value="224563">Minusvalidos A</option>
+                <option value="224562">Minusvalidos B</option>
+                <option value="224561">Pista - C2</option>
+                <option value="224560">Pista - C1</option>
+                <option value="224455">Sector 107</option>
+                <option value="224454">Sector 106</option>
+                <option value="224453">Sector 105</option>
+                <option value="224459">Sector 111</option>
+                <option value="224458">Sector 110</option>
+                <option value="224457">Sector 109</option>
+                <option value="224456">Sector 108</option>
+                <option value="224463">Sector 116</option>
+                <option value="224462">Sector 114</option>
+                <option value="224461">Sector 113</option>
+                <option value="224460">Sector 112</option>
+                <option value="224467">Sector 119</option>
+                <option value="224466">Sector 118</option>
+                <option value="224465">Sector 117</option>
+                <option value="224464">Sector 115</option>
+                <option value="224470">Sector 122</option>
+                <option value="224469">Sector 121</option>
+                <option value="224468">Sector 120</option>
+                <option value="224479">Sector Palco / Llotja</option>
+                <option value="224483">Sector 210</option>
+                <option value="224482">Sector 209</option>
+                <option value="224481">Sector 208</option>
+                <option value="224480">Sector 207</option>
+                <option value="224487">Sector 214</option>
+                <option value="224486">Sector 213</option>
+                <option value="224485">Sector 212</option>
+                <option value="224484">Sector 211</option>
+                <option value="224491">Sector 218</option>
+                <option value="224490">Sector 217</option>
+                <option value="224489">Sector 216</option>
+                <option value="224488">Sector 215</option>
+                <option value="224495">Sector 222</option>
+                <option value="224494">Sector 221</option>
+                <option value="224493">Sector 220</option>
+                <option value="224492">Sector 219</option>
+                <option value="224507">Sector 308</option>
+                <option value="224506">Sector 307</option>
+                <option value="224505">Sector 306</option>
+                <option value="224504">Sector 305</option>
+                <option value="224511">Sector 312</option>
+                <option value="224510">Sector 311</option>
+                <option value="224509">Sector 310</option>
+                <option value="224508">Sector 309</option>
+              </select>
+            </div>
+
+            <div class="privacy-card">
+              <label>
+                <input type="checkbox" id="autorizacion" name="autorizacion" required />
+                <span>
+                  <span class="privacy-title">Mi amigo me ha autorizado a referirlo<span class="req">*</span></span>
+                  <span class="privacy-text">Confirmo que la persona referida me ha dado su consentimiento para recibir el aviso por email cuando haya entradas disponibles. Sus datos se tratan conforme al RGPD y no se comparten con terceros.</span>
+                </span>
+              </label>
+            </div>
+
+          </div>
+
+          <button type="submit">Avisar a mi amigo</button>
+          <p class="form-disclaimer">Este formulario no garantiza disponibilidad ni reserva de entrada.</p>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 RC Celta de Vigo. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+      const form = document.getElementById('refer-form');
+      const btn  = form.querySelector('button[type="submit"]');
+      const msg  = document.createElement('p');
+      msg.className = 'form-msg';
+      btn.after(msg);
+
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const gradaSelect = this.grada;
+        const gradaId     = gradaSelect.value;
+        const gradaName   = gradaSelect.options[gradaSelect.selectedIndex]?.text ?? '';
+
+        const payload = {
+          nombre:         this.nombre.value.trim(),
+          apellidos:      this.apellidos.value.trim(),
+          email:          this.email.value.trim(),
+          event_id:       this.event_id.value,
+          event_name:     this.event_name.value,
+          grada_id:       gradaId,
+          grada_name:     gradaName,
+          referrer_email: this.referrer_email.value.trim(),
+        };
+
+        btn.disabled    = true;
+        btn.textContent = 'Enviando…';
+        msg.style.display = 'none';
+
+        try {
+          const res  = await fetch('/subscribe', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(payload),
+          });
+          const data = await res.json();
+
+          if (data.ok) {
+            msg.className     = 'form-msg success';
+            msg.textContent   = '¡Listo! Avisaremos a tu amigo en cuanto salgan las entradas.';
+            msg.style.display = 'block';
+            form.dispatchEvent(new CustomEvent('refer:success', {
+              detail: { sector_id: gradaId, sector_name: gradaName },
+            }));
+            form.reset();
+          } else {
+            throw new Error(data.error || 'Error desconocido');
+          }
+        } catch (err) {
+          msg.className     = 'form-msg error';
+          msg.textContent   = `Error: ${err.message}`;
+          msg.style.display = 'block';
+          form.dispatchEvent(new CustomEvent('refer:error', {
+            detail: { error_message: err.message },
+          }));
+        } finally {
+          btn.disabled    = false;
+          btn.textContent = 'Avisar a mi amigo';
+        }
+      });
+
+      // ── GA4 event tracking ──
+      (function initReferAnalytics() {
+        if (typeof gtag !== 'function') return;
+        const eventCtx = () => ({
+          event_id:       document.querySelector('input[name="event_id"]')?.value || '',
+          event_name_raw: (document.querySelector('input[name="event_name"]')?.value || '')
+                            .replace(/^\*\s*/, '').trim(),
+        });
+        const track = (name, params = {}) => gtag('event', name, { ...eventCtx(), ...params });
+
+        let started = false;
+        form.addEventListener('focusin', () => {
+          if (started) return;
+          started = true;
+          track('refer_form_start');
+        });
+        form.addEventListener('submit', () => track('refer_form_submit'));
+        form.addEventListener('refer:success', e => track('refer_success', e.detail));
+        form.addEventListener('refer:error',   e => track('refer_error',   e.detail));
+      })();
+    </script>
+  </body>
+</html>

@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>¡Avísame! — RC Celta</title>
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5L6N62LLES"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5L6N62LLES');
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -30,18 +40,83 @@
       body {
         font-family: 'Barlow', system-ui, sans-serif;
         color: var(--text);
-        background: var(--celeste);
         line-height: 1.6;
+        min-height: 100vh;
+        background-color: #050a14;
+        overflow-x: hidden;
       }
+
+      /* Stadium photo with Ken Burns drift + floodlight flicker */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background: url("assets/a64c5f1dfeed0a123f36f369b5be59c7.jpg") center top / cover no-repeat;
+        animation:
+          kenBurns 22s ease-in-out infinite alternate,
+          flicker  7s steps(60, end) infinite;
+        will-change: transform, filter;
+      }
+
+      /* Dark gradient overlay + floodlight glow, pulses aggressively */
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(ellipse 60% 35% at 50% 18%, rgba(255, 248, 220, 0.28) 0%, transparent 65%),
+          linear-gradient(180deg, rgba(5, 10, 20, 0.55) 0%, rgba(5, 10, 20, 0.25) 35%, rgba(5, 10, 20, 0.75) 100%);
+        animation: lightPulse 2.4s ease-in-out infinite;
+      }
+
+      @keyframes kenBurns {
+        0%   { transform: scale(1)    translate(0%, 0%); }
+        50%  { transform: scale(1.12) translate(1.5%, -1%); }
+        100% { transform: scale(1.18) translate(-2.5%, -2%); }
+      }
+
+      @keyframes lightPulse {
+        0%, 100% { opacity: 1; }
+        25%      { opacity: 0.80; }
+        50%      { opacity: 1; }
+        72%      { opacity: 0.88; }
+      }
+
+      /* Irregular floodlight flicker — sharp, electric-style stutter */
+      @keyframes flicker {
+        0%, 100%       { filter: brightness(1)    contrast(1); }
+        4%             { filter: brightness(1.18) contrast(1.05); }
+        5%, 7%         { filter: brightness(0.78) contrast(0.95); }
+        8%             { filter: brightness(1.10); }
+        18%            { filter: brightness(1); }
+        19%, 21%       { filter: brightness(0.85); }
+        20%            { filter: brightness(1.22); }
+        46%            { filter: brightness(1); }
+        47%            { filter: brightness(1.30) contrast(1.08); }
+        48%, 50%       { filter: brightness(0.72); }
+        51%            { filter: brightness(1.15); }
+        74%            { filter: brightness(1); }
+        75%, 76%       { filter: brightness(0.82); }
+        77%            { filter: brightness(1.12); }
+        89%            { filter: brightness(0.92); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        body::before, body::after { animation: none; }
+      }
+
+      header, main, footer, .match-banner { position: relative; z-index: 1; }
 
       /* ── Crest ── */
       .celta-crest {
         display: block;
-        width: 120px;
-        max-width: 100%;
+        width: 300px;
+        max-width: 80%;
         height: auto;
         margin: 0 auto 1.75rem;
-        filter: brightness(0) invert(1);
       }
 
       /* ── Hero ── */
@@ -233,11 +308,302 @@
         box-shadow: none;
       }
 
+      /* ── "Ver plano" helper button + stadium modal ── */
+      .map-link {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        width: 100%;
+        margin-top: 0.55rem;
+        background: rgba(108, 172, 228, 0.12);
+        border: 1.5px solid rgba(108, 172, 228, 0.35);
+        color: var(--celeste-dark);
+        font: 600 0.9rem 'Barlow', sans-serif;
+        padding: 0.7rem 0.95rem;
+        border-radius: 10px;
+        cursor: pointer;
+        text-align: left;
+        transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+      }
+      .map-link:hover {
+        background: rgba(108, 172, 228, 0.22);
+        border-color: var(--celeste);
+      }
+      .map-link:active { transform: translateY(1px); }
+      .map-link:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(108, 172, 228, 0.3);
+      }
+      .map-link-icon {
+        width: 22px; height: 22px; flex-shrink: 0;
+        color: var(--celeste);
+      }
+      .map-link-text { flex: 1; line-height: 1.25; }
+      .map-link-hint {
+        display: block;
+        font-weight: 400;
+        font-size: 0.75rem;
+        color: var(--gray-600);
+        margin-top: 0.1rem;
+      }
+      .map-link-arrow {
+        font-size: 1.2rem;
+        line-height: 1;
+        opacity: 0.6;
+        flex-shrink: 0;
+        transition: transform 0.15s ease;
+      }
+      .map-link:hover .map-link-arrow { transform: translateX(3px); opacity: 1; }
+
+      .stadium-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .stadium-modal.open { display: flex; }
+      .stadium-modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(5, 10, 20, 0.75);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+      }
+      .stadium-modal-content {
+        position: relative;
+        background: var(--white);
+        border-radius: 14px;
+        padding: 1.5rem 1.5rem 1.25rem;
+        max-width: 560px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        animation: modalIn 0.2s ease-out;
+      }
+      @keyframes modalIn {
+        from { opacity: 0; transform: scale(0.96); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+      .stadium-modal-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 0.25rem;
+      }
+      .stadium-modal-subtitle {
+        font-size: 0.8rem;
+        color: var(--gray-600);
+        margin-bottom: 1rem;
+      }
+      .stadium-modal-close {
+        position: absolute;
+        top: 0.6rem;
+        right: 0.75rem;
+        background: transparent;
+        border: none;
+        font-size: 1.4rem;
+        line-height: 1;
+        color: var(--gray-400);
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+      }
+      .stadium-modal-close:hover { color: var(--text); background: var(--gray-100); }
+
+      .stadium-svg {
+        width: 100%;
+        height: auto;
+        max-height: 280px;
+        display: block;
+        margin: 0 auto 1rem;
+      }
+      .stadium-svg .tier-zone {
+        transition: opacity 0.2s ease, stroke-width 0.2s ease;
+        opacity: 0.55;
+        stroke: rgba(0,0,0,0.15);
+        stroke-width: 1;
+      }
+      .stadium-svg .tier-zone.active {
+        opacity: 1;
+        stroke: var(--text);
+        stroke-width: 3;
+      }
+      .stadium-svg text { pointer-events: none; }
+
+      .tier-legend {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+      }
+      .tier-row {
+        display: grid;
+        grid-template-columns: 14px 1fr auto;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.5rem 0.75rem;
+        background: var(--gray-100);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        border: 2px solid transparent;
+        transition: border-color 0.15s ease, background-color 0.15s ease;
+      }
+      .tier-row.active {
+        background: rgba(108, 172, 228, 0.12);
+        border-color: var(--celeste);
+      }
+      .tier-swatch { width: 14px; height: 14px; border-radius: 3px; }
+      .tier-name { font-weight: 600; color: var(--text); }
+      .tier-price {
+        font-weight: 700;
+        color: var(--celeste-dark);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ── Budget range slider ── */
+      .budget-filter {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .budget-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .budget-display {
+        font-weight: 700;
+        color: var(--celeste-dark);
+        font-variant-numeric: tabular-nums;
+      }
+      .budget-slider {
+        position: relative;
+        height: 28px;
+        margin: 0 9px;
+      }
+      .budget-track {
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        height: 4px;
+        background: var(--gray-200);
+        border-radius: 2px;
+        transform: translateY(-50%);
+      }
+      .budget-range {
+        position: absolute;
+        height: 100%;
+        background: var(--celeste);
+        border-radius: 2px;
+      }
+      .budget-slider input[type="range"] {
+        position: absolute;
+        width: 100%;
+        height: 0;
+        top: 50%;
+        background: transparent;
+        pointer-events: none;
+        appearance: none;
+        -webkit-appearance: none;
+        margin: 0;
+        padding: 0;
+        outline: none;
+      }
+      .budget-slider input[type="range"]::-webkit-slider-thumb {
+        pointer-events: auto;
+        appearance: none;
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--white);
+        border: 3px solid var(--celeste);
+        cursor: grab;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+      }
+      .budget-slider input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; }
+      .budget-slider input[type="range"]::-moz-range-thumb {
+        pointer-events: auto;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--white);
+        border: 3px solid var(--celeste);
+        cursor: grab;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+      }
+      .budget-bounds {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        color: var(--gray-400);
+        font-variant-numeric: tabular-nums;
+      }
+      .budget-noresults {
+        font-size: 0.78rem;
+        color: var(--red);
+        margin-top: 0.25rem;
+        display: none;
+      }
+      .budget-noresults.show { display: block; }
+
       .form-disclaimer {
         font-size: 0.8rem;
         color: var(--gray-400);
         text-align: center;
         margin-top: 0.75rem;
+      }
+
+      /* ── Refer a friend ── */
+      .refer-section {
+        max-width: 640px;
+        margin: 2rem auto 0;
+        padding: 1.75rem 1.5rem;
+        text-align: center;
+        background: rgba(13, 27, 42, 0.55);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1px solid rgba(108, 172, 228, 0.25);
+        border-radius: 12px;
+      }
+      .refer-section p {
+        color: var(--white);
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+      }
+      .refer-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.95rem 2.25rem;
+        background: var(--celeste);
+        color: var(--white);
+        border: none;
+        border-radius: 10px;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 0.04em;
+        text-decoration: none;
+        box-shadow: 0 4px 14px rgba(108, 172, 228, 0.4);
+        transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+      }
+      .refer-btn:hover {
+        background: var(--celeste-dark);
+        box-shadow: 0 6px 20px rgba(108, 172, 228, 0.55);
+      }
+      .refer-btn:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 8px rgba(108, 172, 228, 0.3);
       }
 
       /* ── Footer ── */
@@ -267,8 +633,8 @@
       <section aria-label="Hero">
         <figure>
           <img
-            src="assets/celta-crest.svg"
-            alt="Escudo del RC Celta de Vigo"
+            src="assets/celta-horizontal.png"
+            alt="RC Celta de Vigo"
             class="celta-crest"
           />
           <figcaption>RC Celta de Vigo</figcaption>
@@ -365,10 +731,10 @@
       <div class="match-card">
         <div class="match-card-top">
           <div>
-            <div class="match-event-name">* API NUMBERED EVENT</div>
-            <div class="match-subtitle">GIRA 2019</div>
+            <div class="match-event-name" id="m-name">Partido en Estadio Saprissa — 12 feb 2020</div>
+            <div class="match-subtitle" id="m-subtitle">GIRA 2019</div>
           </div>
-          <div class="match-on-sale">On sale</div>
+          <div class="match-on-sale" id="m-sale">On sale</div>
         </div>
         <div class="match-meta-row">
           <span class="match-meta-item">
@@ -376,24 +742,26 @@
               <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
               <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
             </svg>
-            12 feb 2020, 21:00
+            <span id="m-date">12 feb 2020, 21:00</span>
           </span>
           <span class="match-meta-item">
             <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
             </svg>
-            Estadio Saprissa, Barcelona
+            <span id="m-venue">Estadio Saprissa, Barcelona</span>
           </span>
           <span class="match-meta-item">
-            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/>
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 7H10a4 4 0 0 0 0 8h4a4 4 0 0 1 0 8H6"/>
+              <line x1="7" y1="7" x2="17" y2="7"/>
+              <line x1="7" y1="11" x2="13" y2="11"/>
             </svg>
-            10 € – 50 €
+            <span id="m-price">10 € – 50 €</span>
           </span>
         </div>
         <div class="match-avail-row">
           <span class="match-avail-label">Disponibilidad</span>
-          <span class="match-avail-value">14.372 / 14.786 (97%)</span>
+          <span class="match-avail-value" id="m-avail">14.369 / 14.786 (97%)</span>
         </div>
       </div>
     </section>    <!-- MATCH_INFO_END -->
@@ -447,93 +815,122 @@
               </div>
             </div>
 
+            <div class="budget-filter" id="budget-filter">
+              <div class="budget-header">
+                <span>Presupuesto</span>
+                <span class="budget-display"><span id="budget-min-display">—</span> – <span id="budget-max-display">—</span></span>
+              </div>
+              <div class="budget-slider">
+                <div class="budget-track"><div class="budget-range" id="budget-range"></div></div>
+                <input type="range" id="budget-min" aria-label="Precio mínimo" />
+                <input type="range" id="budget-max" aria-label="Precio máximo" />
+              </div>
+              <div class="budget-bounds">
+                <span id="budget-floor">—</span>
+                <span id="budget-ceiling">—</span>
+              </div>
+              <p class="budget-noresults" id="budget-noresults">Ningún sector en este rango.</p>
+            </div>
+
             <div>
               <label for="grada"><span>Grada<span class="req">*</span></span></label>
               <select id="grada" name="grada" required>
-                <option value="" disabled selected>Selecciona una grada</option>
-                <option value="224515">Sector 316</option>
-                <option value="224514">Sector 315</option>
-                <option value="224513">Sector 314</option>
-                <option value="224512">Sector 313</option>
-                <option value="224519">Sector 320</option>
-                <option value="224518">Sector 319</option>
-                <option value="224517">Sector 318</option>
-                <option value="224516">Sector 317</option>
-                <option value="224521">Sector 322</option>
-                <option value="224520">Sector 321</option>
-                <option value="224531">Sector 107 E</option>
-                <option value="224530">Sector 106 E</option>
-                <option value="224529">Sector 105 E</option>
-                <option value="224535">Sector 113 D</option>
-                <option value="224534">Sector 112 D</option>
-                <option value="224533">Sector 109 E</option>
-                <option value="224532">Sector 108 E</option>
-                <option value="224539">Sector 119 E</option>
-                <option value="224538">Sector 118 E</option>
-                <option value="224537">Sector 115 D</option>
-                <option value="224536">Sector 114 D</option>
-                <option value="224542">Sector 122 E</option>
-                <option value="224541">Sector 121 E</option>
-                <option value="224540">Sector 120 E</option>
-                <option value="224551">Pista - B3</option>
-                <option value="224550">Pista - B2</option>
-                <option value="224549">Pista - B1</option>
-                <option value="224555">Pista A2</option>
-                <option value="224554">Pista A1</option>
-                <option value="224553">Pista C2</option>
-                <option value="224552">Pista C1</option>
-                <option value="224559">Pista B3</option>
-                <option value="224558">Pista B2</option>
-                <option value="224557">Pista B1</option>
-                <option value="224556">Pista A3</option>
-                <option value="224563">Minusvalidos A</option>
-                <option value="224562">Minusvalidos B</option>
-                <option value="224561">Pista - C2</option>
-                <option value="224560">Pista - C1</option>
-                <option value="224455">Sector 107</option>
-                <option value="224454">Sector 106</option>
-                <option value="224453">Sector 105</option>
-                <option value="224459">Sector 111</option>
-                <option value="224458">Sector 110</option>
-                <option value="224457">Sector 109</option>
-                <option value="224456">Sector 108</option>
-                <option value="224463">Sector 116</option>
-                <option value="224462">Sector 114</option>
-                <option value="224461">Sector 113</option>
-                <option value="224460">Sector 112</option>
-                <option value="224467">Sector 119</option>
-                <option value="224466">Sector 118</option>
-                <option value="224465">Sector 117</option>
-                <option value="224464">Sector 115</option>
-                <option value="224470">Sector 122</option>
-                <option value="224469">Sector 121</option>
-                <option value="224468">Sector 120</option>
-                <option value="224479">Sector Palco / Llotja</option>
-                <option value="224483">Sector 210</option>
-                <option value="224482">Sector 209</option>
-                <option value="224481">Sector 208</option>
-                <option value="224480">Sector 207</option>
-                <option value="224487">Sector 214</option>
-                <option value="224486">Sector 213</option>
-                <option value="224485">Sector 212</option>
-                <option value="224484">Sector 211</option>
-                <option value="224491">Sector 218</option>
-                <option value="224490">Sector 217</option>
-                <option value="224489">Sector 216</option>
-                <option value="224488">Sector 215</option>
-                <option value="224495">Sector 222</option>
-                <option value="224494">Sector 221</option>
-                <option value="224493">Sector 220</option>
-                <option value="224492">Sector 219</option>
-                <option value="224507">Sector 308</option>
-                <option value="224506">Sector 307</option>
-                <option value="224505">Sector 306</option>
-                <option value="224504">Sector 305</option>
-                <option value="224511">Sector 312</option>
-                <option value="224510">Sector 311</option>
-                <option value="224509">Sector 310</option>
-                <option value="224508">Sector 309</option>
-              </select>
+              <option value="" disabled selected>Selecciona una grada</option>
+              <option value="224515" data-price="14">Sector 316 — 14€</option>
+              <option value="224514" data-price="14">Sector 315 — 14€</option>
+              <option value="224513" data-price="14">Sector 314 — 14€</option>
+              <option value="224512" data-price="14">Sector 313 — 14€</option>
+              <option value="224519" data-price="14">Sector 320 — 14€</option>
+              <option value="224518" data-price="14">Sector 319 — 14€</option>
+              <option value="224517" data-price="14">Sector 318 — 14€</option>
+              <option value="224516" data-price="14">Sector 317 — 14€</option>
+              <option value="224521" data-price="14">Sector 322 — 14€</option>
+              <option value="224520" data-price="14">Sector 321 — 14€</option>
+              <option value="224531" data-price="44">Sector 107 E — 44€</option>
+              <option value="224530" data-price="44">Sector 106 E — 44€</option>
+              <option value="224529" data-price="44">Sector 105 E — 44€</option>
+              <option value="224535" data-price="44">Sector 113 D — 44€</option>
+              <option value="224534" data-price="44">Sector 112 D — 44€</option>
+              <option value="224533" data-price="44">Sector 109 E — 44€</option>
+              <option value="224532" data-price="44">Sector 108 E — 44€</option>
+              <option value="224539" data-price="44">Sector 119 E — 44€</option>
+              <option value="224538" data-price="44">Sector 118 E — 44€</option>
+              <option value="224537" data-price="44">Sector 115 D — 44€</option>
+              <option value="224536" data-price="44">Sector 114 D — 44€</option>
+              <option value="224542" data-price="44">Sector 122 E — 44€</option>
+              <option value="224541" data-price="44">Sector 121 E — 44€</option>
+              <option value="224540" data-price="44">Sector 120 E — 44€</option>
+              <option value="224551" data-price="54">Pista - B3 — 54€</option>
+              <option value="224550" data-price="54">Pista - B2 — 54€</option>
+              <option value="224549" data-price="54">Pista - B1 — 54€</option>
+              <option value="224555" data-price="54">Pista A2 — 54€</option>
+              <option value="224554" data-price="54">Pista A1 — 54€</option>
+              <option value="224553" data-price="54">Pista C2 — 54€</option>
+              <option value="224552" data-price="54">Pista C1 — 54€</option>
+              <option value="224559" data-price="54">Pista B3 — 54€</option>
+              <option value="224558" data-price="54">Pista B2 — 54€</option>
+              <option value="224557" data-price="54">Pista B1 — 54€</option>
+              <option value="224556" data-price="54">Pista A3 — 54€</option>
+              <option value="224563" data-price="54">Minusvalidos A — 54€</option>
+              <option value="224562" data-price="54">Minusvalidos B — 54€</option>
+              <option value="224561" data-price="54">Pista - C2 — 54€</option>
+              <option value="224560" data-price="54">Pista - C1 — 54€</option>
+              <option value="224455" data-price="34">Sector 107 — 34€</option>
+              <option value="224454" data-price="34">Sector 106 — 34€</option>
+              <option value="224453" data-price="34">Sector 105 — 34€</option>
+              <option value="224459" data-price="34">Sector 111 — 34€</option>
+              <option value="224458" data-price="34">Sector 110 — 34€</option>
+              <option value="224457" data-price="34">Sector 109 — 34€</option>
+              <option value="224456" data-price="34">Sector 108 — 34€</option>
+              <option value="224463" data-price="34">Sector 116 — 34€</option>
+              <option value="224462" data-price="34">Sector 114 — 34€</option>
+              <option value="224461" data-price="34">Sector 113 — 34€</option>
+              <option value="224460" data-price="34">Sector 112 — 34€</option>
+              <option value="224467" data-price="34">Sector 119 — 34€</option>
+              <option value="224466" data-price="34">Sector 118 — 34€</option>
+              <option value="224465" data-price="34">Sector 117 — 34€</option>
+              <option value="224464" data-price="34">Sector 115 — 34€</option>
+              <option value="224470" data-price="34">Sector 122 — 34€</option>
+              <option value="224469" data-price="34">Sector 121 — 34€</option>
+              <option value="224468" data-price="34">Sector 120 — 34€</option>
+              <option value="224479" data-price="24">Sector Palco / Llotja — 24€</option>
+              <option value="224483" data-price="24">Sector 210 — 24€</option>
+              <option value="224482" data-price="24">Sector 209 — 24€</option>
+              <option value="224481" data-price="24">Sector 208 — 24€</option>
+              <option value="224480" data-price="24">Sector 207 — 24€</option>
+              <option value="224487" data-price="24">Sector 214 — 24€</option>
+              <option value="224486" data-price="24">Sector 213 — 24€</option>
+              <option value="224485" data-price="24">Sector 212 — 24€</option>
+              <option value="224484" data-price="24">Sector 211 — 24€</option>
+              <option value="224491" data-price="24">Sector 218 — 24€</option>
+              <option value="224490" data-price="24">Sector 217 — 24€</option>
+              <option value="224489" data-price="24">Sector 216 — 24€</option>
+              <option value="224488" data-price="24">Sector 215 — 24€</option>
+              <option value="224495" data-price="24">Sector 222 — 24€</option>
+              <option value="224494" data-price="24">Sector 221 — 24€</option>
+              <option value="224493" data-price="24">Sector 220 — 24€</option>
+              <option value="224492" data-price="24">Sector 219 — 24€</option>
+              <option value="224507" data-price="14">Sector 308 — 14€</option>
+              <option value="224506" data-price="14">Sector 307 — 14€</option>
+              <option value="224505" data-price="14">Sector 306 — 14€</option>
+              <option value="224504" data-price="14">Sector 305 — 14€</option>
+              <option value="224511" data-price="14">Sector 312 — 14€</option>
+              <option value="224510" data-price="14">Sector 311 — 14€</option>
+              <option value="224509" data-price="14">Sector 310 — 14€</option>
+              <option value="224508" data-price="14">Sector 309 — 14€</option>
+            </select>
+              <button type="button" class="map-link" id="open-stadium-map">
+                <svg class="map-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <ellipse cx="12" cy="12" rx="10" ry="6"/>
+                  <line x1="2" y1="12" x2="22" y2="12"/>
+                  <circle cx="12" cy="12" r="1.6" fill="currentColor"/>
+                </svg>
+                <span class="map-link-text">
+                  Ver plano del estadio
+                  <span class="map-link-hint">Encuentra tu grada en el mapa de zonas</span>
+                </span>
+                <span class="map-link-arrow" aria-hidden="true">→</span>
+              </button>
             </div>
 
             <div class="privacy-card">
@@ -551,6 +948,11 @@
           <button type="submit">Quiero recibir el aviso</button>
           <p class="form-disclaimer">Este formulario no garantiza disponibilidad ni reserva de entrada.</p>
         </form>
+      </section>
+
+      <section class="refer-section" aria-label="Refer a friend">
+        <p>¿Conoces a alguien interesado?</p>
+        <a href="refer.html" class="refer-btn">Refiere a un amigo →</a>
       </section>
     </main>
 
@@ -573,6 +975,192 @@
     </style>
 
     <script>
+      // ── Live session refresh ──
+      // Fetches /session on page load + every 30s. Updates banner, hidden form fields,
+      // and per-sector availability in the grada dropdown. Falls back to baked-in
+      // values on network error.
+      (function liveSession() {
+        const SESSION = document.querySelector('input[name="event_id"]')?.value || '240895';
+        const nFmt    = n => Number(n).toLocaleString('es-ES');
+
+        const dateFmt = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+        const timeFmt = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' });
+        const formatDate = iso => {
+          if (!iso) return '';
+          const d = new Date(iso);
+          return `${dateFmt.format(d)}, ${timeFmt.format(d)}`;
+        };
+        const formatPrice = p => {
+          if (p?.min == null || p?.max == null) return '';
+          return p.min === p.max ? `${p.min} €` : `${p.min} € – ${p.max} €`;
+        };
+
+        const setText = (id, text) => {
+          const el = document.getElementById(id);
+          if (el && text != null && el.textContent !== text) {
+            el.textContent = text;
+            el.animate(
+              [{ opacity: 0.4 }, { opacity: 1 }],
+              { duration: 400, easing: 'ease-out' }
+            );
+          }
+        };
+
+        // Smooth tween for the availability counter — feels like a live ticker
+        let lastAvail = null;
+        const parseAvail = el => {
+          const m = el?.textContent?.match(/^([\d.]+)\s*\/\s*([\d.]+)\s*\((\d+)%\)/);
+          return m ? {
+            available: Number(m[1].replace(/\./g, '')),
+            total:     Number(m[2].replace(/\./g, '')),
+            percent:   Number(m[3]),
+          } : null;
+        };
+        const renderAvail = (el, a) => {
+          el.textContent = `${nFmt(a.available)} / ${nFmt(a.total)} (${a.percent}%)`;
+        };
+        function animateAvail(el, from, to, durationMs = 900) {
+          const start = performance.now();
+          function step(now) {
+            const t = Math.min(1, (now - start) / durationMs);
+            const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+            const a   = Math.round(from.available + (to.available - from.available) * eased);
+            const tot = Math.round(from.total     + (to.total     - from.total)     * eased);
+            const p   = tot ? Math.round(100 * a / tot) : 0;
+            renderAvail(el, { available: a, total: tot, percent: p });
+            if (t < 1) requestAnimationFrame(step);
+          }
+          requestAnimationFrame(step);
+        }
+        function updateAvail(to) {
+          const el = document.getElementById('m-avail');
+          if (!el) return;
+          const from = lastAvail ?? parseAvail(el) ?? to;
+          if (from.available !== to.available || from.total !== to.total) {
+            animateAvail(el, from, to);
+          } else if (!lastAvail) {
+            renderAvail(el, to);
+          }
+          lastAvail = to;
+        }
+
+        function applySectors(sectors) {
+          const select = document.getElementById('grada');
+          if (!select || !sectors?.length) return;
+          const byId = new Map(sectors.map(s => [String(s.id), s]));
+          for (const opt of select.options) {
+            if (!opt.value) continue;
+            const live = byId.get(opt.value);
+            if (!live) continue;
+            if (live.price != null) opt.dataset.price = String(live.price);
+            const soldOut = live.available === 0;
+            const label = `${live.name} — ${live.price}€${soldOut ? ' (agotada)' : ''}`;
+            if (opt.textContent !== label) opt.textContent = label;
+            opt.disabled = soldOut;
+            opt.classList.toggle('sold-out', soldOut);
+          }
+          // If the currently selected option just sold out, clear it
+          if (select.selectedOptions[0]?.disabled) select.value = '';
+        }
+
+        async function tick() {
+          try {
+            const res = await fetch(`/session?session=${SESSION}`, { cache: 'no-store' });
+            if (!res.ok) return;
+            const d = await res.json();
+            if (!d.ok) return;
+
+            const venueShort  = d.venue || '';
+            const datePart    = d.date ? dateFmt.format(new Date(d.date)) : '';
+            const derivedTitle = venueShort && datePart
+              ? `Partido en ${venueShort} — ${datePart}`
+              : venueShort
+                ? `Partido en ${venueShort}`
+                : 'Próximo partido';
+            // Prefer the real event name from Onebox; fall back to derived only when API returns placeholder
+            setText('m-name', d.real_title || derivedTitle);
+            setText('m-subtitle', d.subtitle || '');
+            setText('m-date',     formatDate(d.date));
+            setText('m-venue',    d.venue_city ? `${d.venue}, ${d.venue_city}` : d.venue);
+            setText('m-price',    formatPrice(d.price));
+            updateAvail(d.availability);
+
+            document.getElementById('m-subtitle').hidden = !d.subtitle;
+            document.getElementById('m-sale').hidden     = !d.on_sale;
+
+            // Sync hidden form fields (so the form sends current session info to Mailchimp)
+            const eid = document.querySelector('input[name="event_id"]');
+            const ena = document.querySelector('input[name="event_name"]');
+            if (eid && d.session_id) eid.value = String(d.session_id);
+            if (ena && d.name)       ena.value = d.name;
+
+            applySectors(d.sectors);
+          } catch (_) { /* keep last good values */ }
+        }
+
+        tick();
+        setInterval(tick, 10_000);
+      })();
+
+      // ── Budget range filter ──
+      (function initBudget() {
+        const select = document.getElementById('grada');
+        const options = Array.from(select.querySelectorAll('option[data-price]'));
+        if (!options.length) {
+          // No prices baked in — hide the filter
+          document.getElementById('budget-filter')?.remove();
+          return;
+        }
+        const prices = options.map(o => Number(o.dataset.price));
+        const lo = Math.min(...prices);
+        const hi = Math.max(...prices);
+
+        const minIn = document.getElementById('budget-min');
+        const maxIn = document.getElementById('budget-max');
+        const minDisp = document.getElementById('budget-min-display');
+        const maxDisp = document.getElementById('budget-max-display');
+        const floor   = document.getElementById('budget-floor');
+        const ceil    = document.getElementById('budget-ceiling');
+        const fill    = document.getElementById('budget-range');
+        const empty   = document.getElementById('budget-noresults');
+
+        for (const el of [minIn, maxIn]) { el.min = lo; el.max = hi; el.step = 1; }
+        minIn.value = lo;
+        maxIn.value = hi;
+        floor.textContent = `${lo}€`;
+        ceil.textContent  = `${hi}€`;
+
+        function update() {
+          let a = Number(minIn.value);
+          let b = Number(maxIn.value);
+          // Keep min ≤ max by clamping whichever was just moved
+          if (a > b) { if (this === minIn) a = b; else b = a; minIn.value = a; maxIn.value = b; }
+
+          minDisp.textContent = `${a}€`;
+          maxDisp.textContent = `${b}€`;
+          const pct = v => ((v - lo) / (hi - lo)) * 100;
+          fill.style.left  = pct(a) + '%';
+          fill.style.right = (100 - pct(b)) + '%';
+
+          let visible = 0;
+          for (const o of options) {
+            const p = Number(o.dataset.price);
+            const ok = p >= a && p <= b;
+            o.hidden = !ok;
+            o.disabled = !ok;
+            if (ok) visible++;
+          }
+          empty.classList.toggle('show', visible === 0);
+
+          // If current selection no longer fits the range, clear it
+          if (select.selectedOptions[0]?.hidden) select.value = '';
+        }
+
+        minIn.addEventListener('input', update);
+        maxIn.addEventListener('input', update);
+        update();
+      })();
+
       const form = document.getElementById('avisame-form');
       const btn  = form.querySelector('button[type="submit"]');
       const msg  = document.createElement('p');
@@ -612,6 +1200,13 @@
             msg.className     = 'form-msg success';
             msg.textContent   = data.message || '¡Registrado correctamente!';
             msg.style.display = 'block';
+            form.dispatchEvent(new CustomEvent('subscribe:success', {
+              detail: {
+                sector_id:   gradaId,
+                sector_name: gradaName,
+                price_eur:   Number(gradaSelect.selectedOptions[0]?.dataset.price) || null,
+              },
+            }));
             form.reset();
           } else {
             throw new Error(data.error || 'Error desconocido');
@@ -620,11 +1215,223 @@
           msg.className     = 'form-msg error';
           msg.textContent   = `Error: ${err.message}`;
           msg.style.display = 'block';
+          form.dispatchEvent(new CustomEvent('subscribe:error', {
+            detail: {
+              sector_id:     gradaId || null,
+              error_message: err.message,
+            },
+          }));
         } finally {
           btn.disabled    = false;
           btn.textContent = '¡Avísame!';
         }
       });
+    </script>
+
+    <script>
+      // ── GA4 event tracking ──
+      // All custom events are sent via gtag() with the live session context attached.
+      (function initAnalytics() {
+        if (typeof gtag !== 'function') return;
+
+        const form  = document.getElementById('avisame-form');
+        const grada = document.getElementById('grada');
+        if (!form || !grada) return;
+
+        const PRICE_TO_TIER = { 54: 'PISTA', 44: 'VIP', 34: 'PISO 1', 24: 'PISO 2', 14: 'PISO 3' };
+
+        // Live session context attached to every custom event
+        function obContext() {
+          const rawName  = (document.querySelector('input[name="event_name"]')?.value || '')
+                            .replace(/^\*\s*/, '').trim();
+          const availTxt = document.getElementById('m-avail')?.textContent || '';
+          const pctMatch = availTxt.match(/\((\d+)%\)/);
+          return {
+            event_id:         document.querySelector('input[name="event_id"]')?.value || '',
+            event_name_raw:   rawName,
+            display_title:    document.getElementById('m-name')?.textContent?.trim() || '',
+            venue:            document.getElementById('m-venue')?.textContent?.trim() || '',
+            availability_pct: pctMatch ? Number(pctMatch[1]) : null,
+            on_sale:          !document.getElementById('m-sale')?.hidden,
+          };
+        }
+        const track = (name, params = {}) => gtag('event', name, { ...obContext(), ...params });
+
+        function selectedSectorParams() {
+          const opt = grada.selectedOptions[0];
+          if (!opt || !opt.value) return {};
+          const price = Number(opt.dataset.price);
+          return {
+            sector_id:   opt.value,
+            sector_name: opt.text.split(' — ')[0],
+            tier:        PRICE_TO_TIER[price] || null,
+            price_eur:   isNaN(price) ? null : price,
+          };
+        }
+
+        // 1. form_start — fires once on first focus into any field
+        let started = false;
+        form.addEventListener('focusin', () => {
+          if (started) return;
+          started = true;
+          track('form_start');
+        });
+
+        // 2. sector_selected
+        grada.addEventListener('change', () => track('sector_selected', selectedSectorParams()));
+
+        // 3. budget_changed — fires on slider release (not every pixel)
+        function fireBudget() {
+          const lo = document.getElementById('budget-min');
+          const hi = document.getElementById('budget-max');
+          const visible = document.querySelectorAll('#grada option[data-price]:not([hidden]):not([disabled])').length;
+          track('budget_changed', {
+            min_eur:         Number(lo.value),
+            max_eur:         Number(hi.value),
+            visible_sectors: visible,
+          });
+        }
+        document.getElementById('budget-min')?.addEventListener('change', fireBudget);
+        document.getElementById('budget-max')?.addEventListener('change', fireBudget);
+
+        // 4. stadium_map_opened
+        document.getElementById('open-stadium-map')?.addEventListener('click', () => {
+          track('stadium_map_opened', { has_sector_selected: !!grada.value });
+        });
+
+        // 5. refer_button_clicked (the link to refer.html)
+        document.querySelector('.refer-btn')?.addEventListener('click', () => track('refer_button_clicked'));
+
+        // 6. form_submit — fires on intent (before the fetch resolves)
+        form.addEventListener('submit', () => track('form_submit', selectedSectorParams()));
+
+        // 7/8. subscribe_success / subscribe_error — dispatched by the existing fetch handler
+        form.addEventListener('subscribe:success', e => {
+          track('subscribe_success', { method: 'direct', ...e.detail });
+        });
+        form.addEventListener('subscribe:error', e => {
+          track('subscribe_error', { ...e.detail });
+        });
+      })();
+    </script>
+
+    <!-- Stadium map modal -->
+    <div class="stadium-modal" id="stadium-modal" role="dialog" aria-modal="true" aria-labelledby="stadium-modal-title">
+      <div class="stadium-modal-backdrop" data-close></div>
+      <div class="stadium-modal-content">
+        <button type="button" class="stadium-modal-close" data-close aria-label="Cerrar">×</button>
+        <div class="stadium-modal-title" id="stadium-modal-title">Plano del estadio</div>
+        <div class="stadium-modal-subtitle" id="stadium-modal-subtitle">Las zonas están coloreadas por categoría de precio</div>
+
+        <!-- Stadium diagram: concentric rings by tier. Swap this SVG for a real floorplan image when you have one. -->
+        <svg class="stadium-svg" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- Tier rings, outermost (cheapest) to innermost (most expensive) -->
+          <rect class="tier-zone" data-tier="PISO 3" x="20"  y="20"  width="360" height="240" rx="100" ry="80"  fill="#0033CC"/>
+          <rect class="tier-zone" data-tier="PISO 2" x="50"  y="42"  width="300" height="196" rx="82"  ry="64"  fill="#0099FF"/>
+          <rect class="tier-zone" data-tier="PISO 1" x="76"  y="62"  width="248" height="156" rx="64"  ry="48"  fill="#FF6600"/>
+          <rect class="tier-zone" data-tier="VIP"    x="102" y="82"  width="196" height="116" rx="46"  ry="34"  fill="#FF9966"/>
+          <rect class="tier-zone" data-tier="PISTA"  x="128" y="102" width="144" height="76"  rx="28"  ry="20"  fill="#9E4500"/>
+          <!-- Pitch -->
+          <rect x="148" y="118" width="104" height="44" rx="3" fill="#2ea043" opacity="0.9"/>
+          <line x1="200" y1="118" x2="200" y2="162" stroke="#fff" stroke-width="0.8" opacity="0.5"/>
+          <circle cx="200" cy="140" r="7" fill="none" stroke="#fff" stroke-width="0.8" opacity="0.5"/>
+          <!-- Tier labels (placed top side of each ring) -->
+          <text x="200" y="34"  text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="Barlow,sans-serif">PISO 3</text>
+          <text x="200" y="56"  text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="Barlow,sans-serif">PISO 2</text>
+          <text x="200" y="76"  text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="Barlow,sans-serif">PISO 1</text>
+          <text x="200" y="96"  text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="Barlow,sans-serif">VIP</text>
+          <text x="200" y="116" text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="Barlow,sans-serif">PISTA</text>
+        </svg>
+
+        <div class="tier-legend" id="tier-legend">
+          <!-- Filled by JS from the same Onebox /session data -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── Stadium map modal ──
+      (function initStadiumModal() {
+        const modal = document.getElementById('stadium-modal');
+        const opener = document.getElementById('open-stadium-map');
+        const subtitle = document.getElementById('stadium-modal-subtitle');
+        const legend = document.getElementById('tier-legend');
+        const select = document.getElementById('grada');
+        if (!modal || !opener || !select) return;
+
+        // Derive the tier set from the dropdown — uses live data
+        function buildLegend() {
+          // Collect unique tiers from current options + their prices
+          const tierMap = new Map();   // tierName → { price, sectors: [name,…] }
+          for (const opt of select.options) {
+            if (!opt.value || !opt.dataset.price) continue;
+            // Tier name isn't on the option directly; we infer from the option label format "Sector X — N€"
+            // Better: read from live /session data which we already poll. For now group by price (1 tier = 1 price).
+            const price = Number(opt.dataset.price);
+            if (!tierMap.has(price)) tierMap.set(price, { price, sectors: [], name: null });
+            tierMap.get(price).sectors.push(opt.text.split(' — ')[0]);
+          }
+          // Map price → tier name based on known Onebox color scheme
+          const priceToTier = { 54: 'PISTA', 44: 'VIP', 34: 'PISO 1', 24: 'PISO 2', 14: 'PISO 3' };
+          const tierColors  = { 'PISTA': '#9E4500', 'VIP': '#FF9966', 'PISO 1': '#FF6600', 'PISO 2': '#0099FF', 'PISO 3': '#0033CC' };
+
+          const rows = [];
+          // Sort tiers by price descending
+          const sortedTiers = [...tierMap.values()].sort((a, b) => b.price - a.price);
+          for (const t of sortedTiers) {
+            const tierName = priceToTier[t.price] || `${t.price}€`;
+            rows.push({ name: tierName, price: t.price, color: tierColors[tierName] || '#888', count: t.sectors.length });
+          }
+          legend.innerHTML = rows.map(r => `
+            <div class="tier-row" data-tier="${r.name}">
+              <span class="tier-swatch" style="background:${r.color}"></span>
+              <span><span class="tier-name">${r.name}</span> <span style="color:var(--gray-400); font-size:0.78rem;">· ${r.count} sectores</span></span>
+              <span class="tier-price">${r.price}€</span>
+            </div>
+          `).join('');
+        }
+
+        // Highlight the tier the user is currently looking at (selected sector or hovered)
+        function highlightTier(tierName) {
+          for (const zone of modal.querySelectorAll('.tier-zone')) {
+            zone.classList.toggle('active', zone.dataset.tier === tierName);
+          }
+          for (const row of legend.querySelectorAll('.tier-row')) {
+            row.classList.toggle('active', row.dataset.tier === tierName);
+          }
+          if (tierName) {
+            subtitle.textContent = `Tu selección está en la zona ${tierName} (resaltada)`;
+          } else {
+            subtitle.textContent = 'Las zonas están coloreadas por categoría de precio';
+          }
+        }
+
+        function tierFromSelectedOption() {
+          const opt = select.selectedOptions[0];
+          if (!opt || !opt.dataset.price) return null;
+          const priceToTier = { 54: 'PISTA', 44: 'VIP', 34: 'PISO 1', 24: 'PISO 2', 14: 'PISO 3' };
+          return priceToTier[Number(opt.dataset.price)] || null;
+        }
+
+        function open() {
+          buildLegend();
+          highlightTier(tierFromSelectedOption());
+          modal.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        }
+        function close() {
+          modal.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+
+        opener.addEventListener('click', open);
+        modal.addEventListener('click', e => {
+          if (e.target.matches('[data-close]')) close();
+        });
+        document.addEventListener('keydown', e => {
+          if (e.key === 'Escape' && modal.classList.contains('open')) close();
+        });
+      })();
     </script>
   </body>
 </html>
