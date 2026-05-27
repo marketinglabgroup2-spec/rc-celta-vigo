@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Fetches session 240895 metadata + availability from ONEBOX and rewrites:
-//   1. The match-info banner at the top of landing.html
+//   1. The match-info banner at the top of index.html
 //   2. The grada <select> dropdown with real sectors
 
 import fs   from 'fs';
@@ -249,8 +249,8 @@ const banner = `
       </div>
     </section>`;
 
-// ── 5. Rewrite landing.html ───────────────────────────────────
-const landingPath = path.join(__dirname, 'landing.html');
+// ── 5. Rewrite index.html ───────────────────────────────────
+const landingPath = path.join(__dirname, 'index.html');
 let html = fs.readFileSync(landingPath, 'utf8');
 
 // Replace match banner placeholder
@@ -285,7 +285,7 @@ updated = updated.replace(
 );
 
 if (updated === html) {
-  console.error('No changes made — check placeholders exist in landing.html.');
+  console.error('No changes made — check placeholders exist in index.html.');
   process.exit(1);
 }
 

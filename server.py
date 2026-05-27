@@ -366,7 +366,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 # Bind to 0.0.0.0 (required by container hosts like Render/Railway/Fly).
 # Empty string binds same thing on Python's socketserver but 0.0.0.0 is explicit.
 print(f'Serving RC Celta ¡Avísame! on port {PORT}', flush=True)
-print(f'Local URL: http://localhost:{PORT}/landing.html', flush=True)
+print(f'Local URL: http://localhost:{PORT}/', flush=True)
 
 with socketserver.TCPServer(('0.0.0.0', PORT), Handler) as httpd:
     httpd.allow_reuse_address = True
