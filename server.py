@@ -226,11 +226,17 @@ def subscribe(nombre, apellidos, email, event_id, event_name, grada_id, grada_na
     if referrer_email:
         merge_fields['REF_BY'] = referrer_email   # populated → triggers merge-field journey
 
+    # GDPR-safe: referred friends must double-opt-in (Mailchimp sends them a
+    # confirmation email; they're only added to the list if they click).
+    # Direct signups already gave explicit consent via the form's privacy
+    # checkbox, so single opt-in is sufficient.
+    status_if_new = 'pending' if referrer_email else 'subscribed'
+
     status, body = _mc_request('PUT',
         f'/lists/{MC_AUDIENCE}/members/{subscriber_hash}',
         {
             'email_address': email,
-            'status_if_new': 'subscribed',
+            'status_if_new': status_if_new,
             'merge_fields': merge_fields,
         }
     )
@@ -336,9 +342,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                                referrer_email=referrer_email)
 
         if ok:
-            ref_note = f' | referred by {referrer_email}' if referrer_email else ''
+            ref_note = f' | referred by {referrer_email} (pending double opt-in)' if referrer_email else ''
             print(f'  ✓  {email} | event:{event_id} | grada:{grada_id} | tags applied{ref_note}')
-            msg = ('¡Listo! Avisaremos a tu amigo en cuanto salgan las entradas.'
+            msg = ('¡Listo! Hemos enviado un email a tu amigo para que confirme la suscripción. '
+                   'Solo recibirá el aviso cuando haga clic en el enlace de confirmación.'
                    if referrer_email
                    else '¡Te avisaremos en cuanto salgan las entradas!')
             self._json(200, {'ok': True, 'message': msg})

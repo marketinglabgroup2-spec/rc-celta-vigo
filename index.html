@@ -5,14 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>¡Avísame! — RC Celta</title>
 
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5L6N62LLES"></script>
+    <!-- Google Analytics 4 with Consent Mode v2 (LSSI-CE / RGPD compliant) -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      // Default: deny all storage until the user consents via the cookie banner
+      gtag('consent', 'default', {
+        ad_storage:        'denied',
+        analytics_storage: 'denied',
+        ad_user_data:      'denied',
+        ad_personalization:'denied',
+        wait_for_update:   500,
+      });
       gtag('js', new Date());
-      gtag('config', 'G-5L6N62LLES');
+      // If the user previously accepted, restore consent before GA4 loads
+      try {
+        if (localStorage.getItem('rcc-consent') === 'granted') {
+          gtag('consent', 'update', { analytics_storage: 'granted' });
+        }
+      } catch (_) {}
+      gtag('config', 'G-5L6N62LLES', { anonymize_ip: true });
     </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5L6N62LLES"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -626,6 +640,83 @@
           border-radius: 8px;
         }
       }
+
+      /* ── Cookie consent banner ── */
+      .cookie-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        background: var(--navy);
+        color: var(--white);
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
+        display: none;
+        animation: cookieIn 0.3s ease-out;
+      }
+      .cookie-banner.show { display: block; }
+      @keyframes cookieIn {
+        from { transform: translateY(100%); }
+        to   { transform: translateY(0); }
+      }
+      .cookie-inner {
+        max-width: 1080px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+      }
+      .cookie-text {
+        flex: 1;
+        min-width: 240px;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.92);
+      }
+      .cookie-text strong { color: var(--white); font-weight: 700; }
+      .cookie-text a {
+        color: var(--celeste);
+        text-decoration: underline;
+        font-weight: 500;
+      }
+      .cookie-actions {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .cookie-btn {
+        padding: 0.7rem 1.4rem;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: opacity 0.15s, transform 0.1s;
+      }
+      .cookie-btn:active { transform: translateY(1px); }
+      .cookie-btn.reject {
+        background: transparent;
+        color: var(--white);
+        border: 1.5px solid rgba(255, 255, 255, 0.4);
+      }
+      .cookie-btn.reject:hover {
+        border-color: var(--white);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .cookie-btn.accept {
+        background: var(--celeste);
+        color: var(--white);
+      }
+      .cookie-btn.accept:hover { background: var(--celeste-dark); }
+      @media (max-width: 600px) {
+        .cookie-inner { flex-direction: column; align-items: stretch; }
+        .cookie-actions { justify-content: stretch; }
+        .cookie-btn { flex: 1; }
+      }
     </style>
   </head>
   <body>
@@ -938,7 +1029,17 @@
                 <input type="checkbox" id="privacidad" name="privacidad" required style="margin-top:0.2rem; flex-shrink:0;" />
                 <span>
                   <span class="privacy-title">Quiero recibir el aviso por email<span class="req">*</span></span>
-                  <span class="privacy-text">Al marcar esta casilla, aceptas que RC Celta de Vigo utilice tu correo electrónico para enviarte un aviso puntual cuando haya entradas disponibles para el partido seleccionado. Tus datos se tratan conforme al RGPD y no se comparten con terceros. Puedes revocar tu consentimiento en cualquier momento.</span>
+                  <span class="privacy-text">Al marcar esta casilla, doy mi consentimiento expreso para que RC Celta de Vigo, S.A.D. (CIF A-36603587) trate mi correo electrónico con la finalidad de enviarme un aviso puntual cuando haya entradas disponibles para el partido seleccionado. He leído y acepto la <a href="privacidad.html" target="_blank" rel="noopener">Política de Privacidad</a>. Puedo revocar este consentimiento en cualquier momento escribiendo a <a href="mailto:privacidad@rccelta.es">privacidad@rccelta.es</a>.</span>
+                </span>
+              </label>
+            </div>
+
+            <div class="privacy-card" style="margin-top:-0.5rem;">
+              <label style="display:flex; align-items:flex-start; gap:0.75rem; cursor:pointer;">
+                <input type="checkbox" id="edad" name="edad" required style="margin-top:0.2rem; flex-shrink:0;" />
+                <span>
+                  <span class="privacy-title">Confirmo que tengo 14 años o más<span class="req">*</span></span>
+                  <span class="privacy-text">Conforme al artículo 7 de la LOPDGDD, los menores de 14 años necesitan el consentimiento de sus padres o tutores.</span>
                 </span>
               </label>
             </div>
@@ -957,8 +1058,64 @@
     </main>
 
     <footer>
-      <p>&copy; 2026 RC Celta de Vigo. Todos los derechos reservados.</p>
+      <p>&copy; 2026 Real Club Celta de Vigo, S.A.D. — CIF A-36603587 — Estadio de Balaídos, Vigo (Pontevedra)</p>
+      <p style="margin-top:0.5rem;">
+        <a href="aviso-legal.html" style="color:var(--gray-400); text-decoration:none; margin:0 0.5rem;">Aviso Legal</a> ·
+        <a href="privacidad.html" style="color:var(--gray-400); text-decoration:none; margin:0 0.5rem;">Política de Privacidad</a> ·
+        <a href="cookies.html" style="color:var(--gray-400); text-decoration:none; margin:0 0.5rem;">Política de Cookies</a> ·
+        <a href="#" id="reopen-cookie" style="color:var(--gray-400); text-decoration:none; margin:0 0.5rem;">Preferencias de cookies</a>
+      </p>
     </footer>
+
+    <!-- Cookie consent banner (LSSI-CE / RGPD) -->
+    <div class="cookie-banner" id="cookie-banner" role="dialog" aria-live="polite" aria-label="Aviso de cookies">
+      <div class="cookie-inner">
+        <p class="cookie-text">
+          <strong>🍪 Usamos cookies.</strong> Utilizamos cookies técnicas (necesarias) y, con tu consentimiento, cookies de análisis (Google Analytics) para entender cómo se usa el sitio y mejorarlo. No usamos cookies publicitarias. Lee más en nuestra <a href="cookies.html">Política de Cookies</a>.
+        </p>
+        <div class="cookie-actions">
+          <button type="button" class="cookie-btn reject" id="cookie-reject">Rechazar</button>
+          <button type="button" class="cookie-btn accept" id="cookie-accept">Aceptar</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── Cookie consent (LSSI-CE / RGPD) ──
+      (function cookieConsent() {
+        const KEY    = 'rcc-consent';
+        const banner = document.getElementById('cookie-banner');
+        const accept = document.getElementById('cookie-accept');
+        const reject = document.getElementById('cookie-reject');
+        const reopen = document.getElementById('reopen-cookie');
+
+        function show() { banner.classList.add('show'); }
+        function hide() { banner.classList.remove('show'); }
+
+        function setConsent(value) {
+          try { localStorage.setItem(KEY, value); } catch (_) {}
+          if (typeof gtag === 'function') {
+            gtag('consent', 'update', {
+              analytics_storage: value === 'granted' ? 'granted' : 'denied',
+            });
+          }
+          hide();
+        }
+
+        // Show banner only if the user hasn't decided yet
+        let stored = null;
+        try { stored = localStorage.getItem(KEY); } catch (_) {}
+        if (stored !== 'granted' && stored !== 'denied') show();
+
+        accept?.addEventListener('click', () => setConsent('granted'));
+        reject?.addEventListener('click', () => setConsent('denied'));
+        reopen?.addEventListener('click', e => {
+          e.preventDefault();
+          try { localStorage.removeItem(KEY); } catch (_) {}
+          show();
+        });
+      })();
+    </script>
 
     <style>
       .form-msg {

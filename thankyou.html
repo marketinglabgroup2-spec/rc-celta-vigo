@@ -231,6 +231,77 @@
 
       .referral-msg.success { background: #0d2818; color: #56d364; }
       .referral-msg.error   { background: #2d1117; color: #f85149; }
+
+      /* ── Cookie consent banner ── */
+      .cookie-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        background: var(--navy);
+        color: var(--white);
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
+        display: none;
+        animation: cookieIn 0.3s ease-out;
+      }
+      .cookie-banner.show { display: block; }
+      @keyframes cookieIn {
+        from { transform: translateY(100%); }
+        to   { transform: translateY(0); }
+      }
+      .cookie-inner {
+        max-width: 1080px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+      }
+      .cookie-text {
+        flex: 1;
+        min-width: 240px;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.92);
+      }
+      .cookie-text strong { color: var(--white); font-weight: 700; }
+      .cookie-text a {
+        color: var(--celeste);
+        text-decoration: underline;
+        font-weight: 500;
+      }
+      .cookie-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+      .cookie-btn {
+        padding: 0.7rem 1.4rem;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .cookie-btn.reject {
+        background: transparent;
+        color: var(--white);
+        border: 1.5px solid rgba(255, 255, 255, 0.4);
+      }
+      .cookie-btn.reject:hover {
+        border-color: var(--white);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .cookie-btn.accept {
+        background: var(--celeste);
+        color: var(--white);
+      }
+      .cookie-btn.accept:hover { background: var(--celeste-dark); }
+      @media (max-width: 600px) {
+        .cookie-inner { flex-direction: column; align-items: stretch; }
+        .cookie-actions { justify-content: stretch; }
+        .cookie-btn { flex: 1; }
+      }
     </style>
   </head>
   <body>
@@ -282,8 +353,58 @@
     </main>
 
     <footer>
-      <p>&copy; 2026 RC Celta de Vigo. Todos los derechos reservados.</p>
+      <p>&copy; 2026 Real Club Celta de Vigo, S.A.D. — CIF A-36603587 — Estadio de Balaídos, Vigo (Pontevedra)</p>
+      <p style="margin-top:0.5rem;">
+        <a href="aviso-legal.html" style="color:var(--gray-400); text-decoration:none; margin:0 0.5rem;">Aviso Legal</a> ·
+        <a href="privacidad.html" style="color:var(--gray-400); text-decoration:none; margin:0 0.5rem;">Política de Privacidad</a> ·
+        <a href="cookies.html" style="color:var(--gray-400); text-decoration:none; margin:0 0.5rem;">Política de Cookies</a> ·
+        <a href="#" id="reopen-cookie" style="color:var(--gray-400); text-decoration:none; margin:0 0.5rem;">Preferencias de cookies</a>
+      </p>
     </footer>
+
+    <!-- Cookie consent banner (LSSI-CE / RGPD) -->
+    <div class="cookie-banner" id="cookie-banner" role="dialog" aria-live="polite" aria-label="Aviso de cookies">
+      <div class="cookie-inner">
+        <p class="cookie-text">
+          <strong>🍪 Usamos cookies.</strong> Cookies técnicas (necesarias) y, con tu consentimiento, cookies de análisis. <a href="cookies.html">Más información</a>.
+        </p>
+        <div class="cookie-actions">
+          <button type="button" class="cookie-btn reject" id="cookie-reject">Rechazar</button>
+          <button type="button" class="cookie-btn accept" id="cookie-accept">Aceptar</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── Cookie consent (LSSI-CE / RGPD) ──
+      (function cookieConsent() {
+        const KEY    = 'rcc-consent';
+        const banner = document.getElementById('cookie-banner');
+        const accept = document.getElementById('cookie-accept');
+        const reject = document.getElementById('cookie-reject');
+        const reopen = document.getElementById('reopen-cookie');
+
+        const show = () => banner.classList.add('show');
+        const hide = () => banner.classList.remove('show');
+
+        function setConsent(value) {
+          try { localStorage.setItem(KEY, value); } catch (_) {}
+          hide();
+        }
+
+        let stored = null;
+        try { stored = localStorage.getItem(KEY); } catch (_) {}
+        if (stored !== 'granted' && stored !== 'denied') show();
+
+        accept?.addEventListener('click', () => setConsent('granted'));
+        reject?.addEventListener('click', () => setConsent('denied'));
+        reopen?.addEventListener('click', e => {
+          e.preventDefault();
+          try { localStorage.removeItem(KEY); } catch (_) {}
+          show();
+        });
+      })();
+    </script>
 
     <script>
       document.getElementById('referral-form').addEventListener('submit', function (e) {

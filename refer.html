@@ -5,14 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Refiere a un amigo — RC Celta</title>
 
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5L6N62LLES"></script>
+    <!-- Google Analytics 4 with Consent Mode v2 (LSSI-CE / RGPD compliant) -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        ad_storage:        'denied',
+        analytics_storage: 'denied',
+        ad_user_data:      'denied',
+        ad_personalization:'denied',
+        wait_for_update:   500,
+      });
       gtag('js', new Date());
-      gtag('config', 'G-5L6N62LLES');
+      try {
+        if (localStorage.getItem('rcc-consent') === 'granted') {
+          gtag('consent', 'update', { analytics_storage: 'granted' });
+        }
+      } catch (_) {}
+      gtag('config', 'G-5L6N62LLES', { anonymize_ip: true });
     </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5L6N62LLES"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -354,6 +366,147 @@
         header { padding: 3rem 1.25rem 2rem; }
         main section { padding: 1.75rem 1.25rem; border-radius: 8px; }
       }
+
+      /* ── Share-via-link section ── */
+      .share-card {
+        background: var(--gray-100);
+        border-radius: 10px;
+        padding: 1.25rem 1.25rem 1rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--celeste);
+      }
+      .share-card h3 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 0.35rem;
+      }
+      .share-card p {
+        font-size: 0.85rem;
+        color: var(--gray-600);
+        margin-bottom: 0.85rem;
+      }
+      .share-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .share-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.55rem 0.95rem;
+        background: var(--white);
+        border: 1.5px solid var(--gray-200);
+        border-radius: 8px;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: border-color 0.15s, background-color 0.15s, transform 0.1s;
+      }
+      .share-btn:hover {
+        border-color: var(--celeste);
+        background: rgba(108, 172, 228, 0.05);
+      }
+      .share-btn:active { transform: translateY(1px); }
+      .share-btn svg { width: 16px; height: 16px; }
+      .form-divider-text {
+        position: relative;
+        text-align: center;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--gray-400);
+        margin: 0.5rem 0 1.25rem;
+      }
+      .form-divider-text::before,
+      .form-divider-text::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: calc(50% - 30px);
+        height: 1px;
+        background: var(--gray-200);
+      }
+      .form-divider-text::before { left: 0; }
+      .form-divider-text::after  { right: 0; }
+
+      /* ── Cookie consent banner ── */
+      .cookie-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        background: var(--navy);
+        color: var(--white);
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
+        display: none;
+        animation: cookieIn 0.3s ease-out;
+      }
+      .cookie-banner.show { display: block; }
+      @keyframes cookieIn {
+        from { transform: translateY(100%); }
+        to   { transform: translateY(0); }
+      }
+      .cookie-inner {
+        max-width: 1080px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+      }
+      .cookie-text {
+        flex: 1;
+        min-width: 240px;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.92);
+      }
+      .cookie-text strong { color: var(--white); font-weight: 700; }
+      .cookie-text a {
+        color: var(--celeste);
+        text-decoration: underline;
+        font-weight: 500;
+      }
+      .cookie-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+      .cookie-btn {
+        padding: 0.7rem 1.4rem;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: opacity 0.15s, transform 0.1s;
+      }
+      .cookie-btn:active { transform: translateY(1px); }
+      .cookie-btn.reject {
+        background: transparent;
+        color: var(--white);
+        border: 1.5px solid rgba(255, 255, 255, 0.4);
+      }
+      .cookie-btn.reject:hover {
+        border-color: var(--white);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .cookie-btn.accept {
+        background: var(--celeste);
+        color: var(--white);
+      }
+      .cookie-btn.accept:hover { background: var(--celeste-dark); }
+      @media (max-width: 600px) {
+        .cookie-inner { flex-direction: column; align-items: stretch; }
+        .cookie-actions { justify-content: stretch; }
+        .cookie-btn { flex: 1; }
+      }
     </style>
   </head>
   <body>
@@ -377,12 +530,41 @@
     </header>
 
     <main>
+      <section aria-label="Compartir el enlace">
+        <div class="share-card">
+          <h3>🚀 Lo más fácil: comparte el enlace</h3>
+          <p>
+            Tu amigo se registra él mismo desde su dispositivo. <strong>Es la opción más rápida y respeta su privacidad</strong> (no necesitas darnos sus datos).
+          </p>
+          <div class="share-buttons">
+            <a class="share-btn" id="share-whatsapp" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="#25D366"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+              WhatsApp
+            </a>
+            <a class="share-btn" id="share-email" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
+              Email
+            </a>
+            <a class="share-btn" id="share-telegram" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="#0088cc"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+              Telegram
+            </a>
+            <button type="button" class="share-btn" id="share-copy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span id="copy-label">Copiar enlace</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <p class="form-divider-text"><span style="background:transparent; padding:0 1rem; position:relative; z-index:1;">o regístralo tú</span></p>
+
       <section aria-label="Formulario de referido">
         <form id="refer-form" novalidate>
           <input type="hidden" name="event_id"   value="240895" />
           <input type="hidden" name="event_name" value="* API NUMBERED EVENT" />
 
-          <h2 class="form-heading">Refiere a un amigo</h2>
+          <h2 class="form-heading">Registra a tu amigo</h2>
           <p class="form-required-note">* Campos obligatorios</p>
 
           <div class="form-fields">
@@ -536,8 +718,18 @@
               <label>
                 <input type="checkbox" id="autorizacion" name="autorizacion" required />
                 <span>
-                  <span class="privacy-title">Mi amigo me ha autorizado a referirlo<span class="req">*</span></span>
-                  <span class="privacy-text">Confirmo que la persona referida me ha dado su consentimiento para recibir el aviso por email cuando haya entradas disponibles. Sus datos se tratan conforme al RGPD y no se comparten con terceros.</span>
+                  <span class="privacy-title">Mi amigo me ha autorizado expresamente<span class="req">*</span></span>
+                  <span class="privacy-text">Confirmo que <strong>he hablado con la persona que voy a referir</strong> y me ha autorizado a facilitar su correo electrónico al RC Celta de Vigo. Mi amigo recibirá un email pidiéndole que <strong>confirme su suscripción</strong> antes de ser añadido a la lista (doble opt-in). Los datos se tratan conforme a nuestra <a href="privacidad.html" target="_blank" rel="noopener">Política de Privacidad</a>.</span>
+                </span>
+              </label>
+            </div>
+
+            <div class="privacy-card" style="margin-top:-0.5rem;">
+              <label>
+                <input type="checkbox" id="edad" name="edad" required />
+                <span>
+                  <span class="privacy-title">Tanto mi amigo como yo tenemos 14 años o más<span class="req">*</span></span>
+                  <span class="privacy-text">Conforme al artículo 7 de la LOPDGDD.</span>
                 </span>
               </label>
             </div>
@@ -551,8 +743,90 @@
     </main>
 
     <footer>
-      <p>&copy; 2026 RC Celta de Vigo. Todos los derechos reservados.</p>
+      <p>&copy; 2026 Real Club Celta de Vigo, S.A.D. — CIF A-36603587 — Estadio de Balaídos, Vigo (Pontevedra)</p>
+      <p style="margin-top:0.5rem;">
+        <a href="aviso-legal.html" style="color:var(--gray-400); text-decoration:none; margin:0 0.5rem;">Aviso Legal</a> ·
+        <a href="privacidad.html" style="color:var(--gray-400); text-decoration:none; margin:0 0.5rem;">Política de Privacidad</a> ·
+        <a href="cookies.html" style="color:var(--gray-400); text-decoration:none; margin:0 0.5rem;">Política de Cookies</a> ·
+        <a href="#" id="reopen-cookie" style="color:var(--gray-400); text-decoration:none; margin:0 0.5rem;">Preferencias de cookies</a>
+      </p>
     </footer>
+
+    <!-- Cookie consent banner (LSSI-CE / RGPD) -->
+    <div class="cookie-banner" id="cookie-banner" role="dialog" aria-live="polite" aria-label="Aviso de cookies">
+      <div class="cookie-inner">
+        <p class="cookie-text">
+          <strong>🍪 Usamos cookies.</strong> Utilizamos cookies técnicas (necesarias) y, con tu consentimiento, cookies de análisis (Google Analytics) para entender cómo se usa el sitio y mejorarlo. No usamos cookies publicitarias. Lee más en nuestra <a href="cookies.html">Política de Cookies</a>.
+        </p>
+        <div class="cookie-actions">
+          <button type="button" class="cookie-btn reject" id="cookie-reject">Rechazar</button>
+          <button type="button" class="cookie-btn accept" id="cookie-accept">Aceptar</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── Cookie consent (LSSI-CE / RGPD) ──
+      (function cookieConsent() {
+        const KEY    = 'rcc-consent';
+        const banner = document.getElementById('cookie-banner');
+        const accept = document.getElementById('cookie-accept');
+        const reject = document.getElementById('cookie-reject');
+        const reopen = document.getElementById('reopen-cookie');
+
+        function show() { banner.classList.add('show'); }
+        function hide() { banner.classList.remove('show'); }
+
+        function setConsent(value) {
+          try { localStorage.setItem(KEY, value); } catch (_) {}
+          if (typeof gtag === 'function') {
+            gtag('consent', 'update', {
+              analytics_storage: value === 'granted' ? 'granted' : 'denied',
+            });
+          }
+          hide();
+        }
+
+        let stored = null;
+        try { stored = localStorage.getItem(KEY); } catch (_) {}
+        if (stored !== 'granted' && stored !== 'denied') show();
+
+        accept?.addEventListener('click', () => setConsent('granted'));
+        reject?.addEventListener('click', () => setConsent('denied'));
+        reopen?.addEventListener('click', e => {
+          e.preventDefault();
+          try { localStorage.removeItem(KEY); } catch (_) {}
+          show();
+        });
+      })();
+
+      // ── Share-via-link buttons (GDPR-safe alternative to the form) ──
+      (function shareLinks() {
+        const SHARE_URL = 'https://marketinglabgroup2-spec.github.io/rc-celta-vigo/';
+        const TEXT      = '¡Hola! Te aviso del servicio del RC Celta de Vigo para enterarte cuando salgan entradas a la venta. Apúntate aquí: ';
+        const SUBJECT   = '¿Quieres entradas del RC Celta? Te aviso cuando salgan';
+
+        const wa = document.getElementById('share-whatsapp');
+        const em = document.getElementById('share-email');
+        const tg = document.getElementById('share-telegram');
+        const cp = document.getElementById('share-copy');
+        const cpLabel = document.getElementById('copy-label');
+
+        if (wa) wa.href = `https://wa.me/?text=${encodeURIComponent(TEXT + SHARE_URL)}`;
+        if (em) em.href = `mailto:?subject=${encodeURIComponent(SUBJECT)}&body=${encodeURIComponent(TEXT + SHARE_URL)}`;
+        if (tg) tg.href = `https://t.me/share/url?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(TEXT)}`;
+
+        cp?.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(SHARE_URL);
+            cpLabel.textContent = '¡Copiado!';
+            setTimeout(() => { cpLabel.textContent = 'Copiar enlace'; }, 1800);
+          } catch (_) {
+            cpLabel.textContent = 'No se pudo copiar';
+          }
+        });
+      })();
+    </script>
 
     <script>
       const form = document.getElementById('refer-form');
