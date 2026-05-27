@@ -1,0 +1,2 @@
+# server.py uses only the Python standard library — no third-party deps.
+# This empty file is intentional; it tells Render this is a Python project.

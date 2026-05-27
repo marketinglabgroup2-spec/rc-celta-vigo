@@ -10,19 +10,23 @@ import base64
 import hashlib
 from urllib.error import HTTPError
 
-PORT = 8080
+PORT = int(os.environ.get('PORT', 8080))
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 
 def load_env():
-    env = {}
-    with open(os.path.join(DIRECTORY, '.env')) as f:
-        for line in f:
-            line = line.strip()
-            if line and not line.startswith('#') and '=' in line:
-                k, _, v = line.partition('=')
-                env[k.strip()] = v.strip()
-    return env
+    """Read .env if present (local dev), then fall back to real env vars (production)."""
+    file_env = {}
+    env_file = os.path.join(DIRECTORY, '.env')
+    if os.path.exists(env_file):
+        with open(env_file) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    k, _, v = line.partition('=')
+                    file_env[k.strip()] = v.strip()
+    # .env wins for local; os.environ fills any gaps (and provides everything in production)
+    return {**dict(os.environ), **file_env}
 
 ENV         = load_env()
 MC_API_KEY  = ENV.get('MAILCHIMP_API_KEY', '')
@@ -271,6 +275,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def log_message(self, fmt, *args):
         print(f'  {self.address_string()} — {fmt % args}')
 
+    def end_headers(self):
+        # CORS for the API + static files (so the GitHub Pages frontend can call the API too)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        super().end_headers()
+
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         qs = urllib.parse.parse_qs(parsed.query)
@@ -349,14 +358,16 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(204)
         self.send_header('Access-Control-Allow-Origin',  '*')
-        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
 
 
-print(f'Serving RC Celta ¡Avísame! at http://localhost:{PORT}/landing.html')
-print('Press Ctrl+C to stop.\n')
+# Bind to 0.0.0.0 (required by container hosts like Render/Railway/Fly).
+# Empty string binds same thing on Python's socketserver but 0.0.0.0 is explicit.
+print(f'Serving RC Celta ¡Avísame! on port {PORT}', flush=True)
+print(f'Local URL: http://localhost:{PORT}/landing.html', flush=True)
 
-with socketserver.TCPServer(('', PORT), Handler) as httpd:
+with socketserver.TCPServer(('0.0.0.0', PORT), Handler) as httpd:
     httpd.allow_reuse_address = True
     httpd.serve_forever()

@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: rc-celta-vigo
+    runtime: python
+    plan: free
+    buildCommand: ""
+    startCommand: python3 server.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.0"
+      - key: MAILCHIMP_API_KEY
+        sync: false
+      - key: MAILCHIMP_AUDIENCE_ID
+        sync: false
+      - key: MAILCHIMP_DC
+        sync: false
+      - key: ONEBOX_BASE_URL
+        value: https://api.oneboxtds.net
+      - key: ONEBOX_CHANNEL_ID
+        sync: false
+      - key: ONEBOX_CLIENT_ID
+        sync: false
+      - key: ONEBOX_CLIENT_SECRET
+        sync: false
