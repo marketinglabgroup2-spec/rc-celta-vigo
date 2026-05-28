@@ -1,0 +1,272 @@
+{
+  "name": "Avísame — ONEBOX → Mailchimp → Mandrill (corrected)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "field": "minutes", "minutesInterval": 15 }
+          ]
+        }
+      },
+      "id": "5b22e382-10f0-439d-b317-74a963679ffc",
+      "name": "Schedule (every 15 min)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [224, -48]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "v1", "name": "event_id", "type": "number", "value": 240895 },
+            { "id": "v2", "name": "channel_id", "type": "number", "value": 2287 },
+            { "id": "v3", "name": "onebox_client_secret", "type": "string", "value": "PASTE_ONEBOX_CLIENT_SECRET_HERE" },
+            { "id": "v4", "name": "mailchimp_list_id", "type": "string", "value": "6c6a220169" },
+            { "id": "v4b", "name": "mailchimp_dc", "type": "string", "value": "us5" },
+            { "id": "v5", "name": "mandrill_from_email", "type": "string", "value": "avisame@rccelta.es" },
+            { "id": "v6", "name": "mandrill_from_name", "type": "string", "value": "RC Celta" },
+            { "id": "v7", "name": "purchase_url_template", "type": "string", "value": "https://tickets.oneboxtds.com/rccelta/select/{sessionId}?viewCode=V_blockmap&utm_source=avisame&utm_medium=email&utm_campaign=recovery-app&utm_content=event-{eventId}-grada-{gradaId}" },
+            { "id": "v8", "name": "unsubscribe_email", "type": "string", "value": "privacidad@rccelta.es" },
+            { "id": "v9", "name": "site_url", "type": "string", "value": "https://marketinglabgroup2-spec.github.io/rc-celta-vigo" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fba45d40-b222-4bb6-b165-9daf551ebdc2",
+      "name": "Vars",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [448, -48]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "list": "={{ $('Vars').first().json.mailchimp_list_id }}",
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "de26ec83-f625-4cb6-b395-53994d36dbfa",
+      "name": "Mailchimp Members",
+      "type": "n8n-nodes-base.mailchimp",
+      "typeVersion": 1,
+      "position": [640, -48],
+      "credentials": {
+        "mailchimpApi": {
+          "id": "TdzIVvqWGr6iRF71",
+          "name": "Mailchimp account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "members",
+        "options": {
+          "includeBinaries": false
+        }
+      },
+      "id": "8eb4abfe-df7d-4873-be49-b6ff4d463915",
+      "name": "Aggregate members",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [848, -48]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.oneboxtds.net/oauth/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            { "name": "grant_type", "value": "client_credentials" },
+            { "name": "client_id", "value": "seller-channel-client" },
+            { "name": "client_secret", "value": "={{ $('Vars').first().json.onebox_client_secret }}" },
+            { "name": "channel_id", "value": "={{ $('Vars').first().json.channel_id }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "98ae8f22-a640-412a-aa80-7dd8068f4116",
+      "name": "ONEBOX Auth",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1040, -48]
+    },
+    {
+      "parameters": {
+        "url": "https://api.oneboxtds.net/catalog-api/v1/sessions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $('ONEBOX Auth').first().json.access_token }}" },
+            { "name": "Accept", "value": "application/json" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "28ecd515-91e1-4acc-8ebb-44dd3041561c",
+      "name": "ONEBOX Sessions",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1248, -48]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filter sessions to the target event AND only those actually on sale.\n// Also derive a 'smart' event name that handles Onebox placeholder titles.\nconst eventId = Number($('Vars').first().json.event_id);\nconst resp = $input.first().json;\nconst sessions = resp.data ?? [];\n\nfunction isPlaceholder(s) {\n  if (!s) return true;\n  const x = s.trim();\n  return (x.startsWith('*')\n          || /\\bAPI\\b/i.test(x)\n          || ['NUMERADO','EVENT','TEST','DEMO'].includes(x.toUpperCase()));\n}\n\nfunction smartTitle(s) {\n  const candidates = [s.event && s.event.name, s.name];\n  const real = candidates.find(c => c && !isPlaceholder(c));\n  if (real) return real;\n  const venue = s.venue && s.venue.name;\n  const dateStr = s.date && s.date.start\n    ? new Date(s.date.start).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })\n    : '';\n  if (venue && dateStr) return 'Partido en ' + venue + ' — ' + dateStr;\n  if (venue) return 'Partido en ' + venue;\n  return 'Próximo partido';\n}\n\nreturn sessions\n  .filter(s => Number(s.event && s.event.id) === eventId)\n  .filter(s => s.on_sale === true && s.sold_out !== true)\n  .map(s => ({\n    json: {\n      session_id:   s.id,\n      session_name: s.name,\n      event_id:     s.event && s.event.id,\n      event_name:   smartTitle(s),\n      venue:        (s.venue && s.venue.name) || null,\n      date:         (s.date && s.date.start) || null,\n      on_sale:      !!s.on_sale,\n      sold_out:     !!s.sold_out\n    }\n  }));"
+      },
+      "id": "6fd92e36-d876-4156-99dd-d90b500a93ba",
+      "name": "Filter by event_id",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1440, -48]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.oneboxtds.net/catalog-api/v1/sessions/{{ $json.session_id }}/availability",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $('ONEBOX Auth').first().json.access_token }}" },
+            { "name": "Accept", "value": "application/json" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8f9d2bfb-165e-4bf6-afa0-1c31740dbcf0",
+      "name": "ONEBOX Availability",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1648, -48]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Emit one item per (session, sector) that has available seats.\nconst sessions = $('Filter by event_id').all();\nconst responses = $input.all();\n\nconst out = [];\nfor (let i = 0; i < responses.length; i++) {\n  const avail = responses[i].json;\n  const sess  = sessions[i] && sessions[i].json || {};\n  const sessionId = avail.id || sess.session_id;\n\n  for (const sec of avail.sectors || []) {\n    let available = 0, total = 0;\n    for (const pt of sec.price_types || []) {\n      available += (pt.availability && pt.availability.available) || 0;\n      total     += (pt.availability && pt.availability.total) || 0;\n    }\n    if (available > 0) {\n      out.push({ json: {\n        event_id:   sess.event_id,\n        session_id: sessionId,\n        event_name: sess.event_name,\n        venue:      sess.venue,\n        date:       sess.date,\n        grada_id:   sec.id,\n        grada_name: sec.name,\n        grada_code: sec.code || null,\n        available,\n        total\n      }});\n    }\n  }\n}\nreturn out;"
+      },
+      "id": "19a3ba0e-a4a7-461e-a8c6-2bbfaa3b30c1",
+      "name": "Gradas with availability",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1840, -48]
+    },
+    {
+      "parameters": {
+        "jsCode": "// For each grada with availability, find subscribers tagged with\n// event:<id>, grada:<id>, source:avisame, AND NOT yet tagged\n// notified:<event>:<grada>. Returns one item per (subscriber, grada).\nconst members = ($('Aggregate members').first().json.members) || [];\nconst gradas  = $input.all();\nconst purchaseTpl = ($('Vars').first().json.purchase_url_template) || '';\nconst wantSource = 'source:avisame';\n\nconst out = [];\nfor (const g of gradas) {\n  const ctx = g.json;\n  const wantEvent    = 'event:' + ctx.event_id;\n  const wantGrada    = 'grada:' + ctx.grada_id;\n  const notifiedTag  = 'notified:' + ctx.event_id + ':' + ctx.grada_id;\n\n  for (const m of members) {\n    if (m.status !== 'subscribed') continue;\n    const tagNames = ((m.tags) || []).map(t => t.name);\n    if (!tagNames.includes(wantEvent))    continue;\n    if (!tagNames.includes(wantGrada))    continue;\n    if (!tagNames.includes(wantSource))   continue;\n    if (tagNames.includes(notifiedTag))   continue;  // dedup: already alerted\n\n    out.push({ json: {\n      email:           m.email_address,\n      subscriber_hash: m.id,\n      first_name:      (m.merge_fields && m.merge_fields.FNAME) || '',\n      last_name:       (m.merge_fields && m.merge_fields.LNAME) || '',\n      event_id:        ctx.event_id,\n      event_name:      ctx.event_name,\n      session_id:      ctx.session_id,\n      grada_id:        ctx.grada_id,\n      grada_name:      ctx.grada_name,\n      available:       ctx.available,\n      notified_tag:    notifiedTag,\n      purchase_url: purchaseTpl\n        .replace('{sessionId}', String(ctx.session_id))\n        .replace('{eventId}',   String(ctx.event_id))\n        .replace('{gradaId}',   String(ctx.grada_id))\n    }});\n  }\n}\nreturn out;"
+      },
+      "id": "892cd478-bd8d-44b1-8260-e20f3bc4f6d6",
+      "name": "Find leads",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2048, -48]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build the email subject + HTML body for each lead.\nconst siteUrl = ($('Vars').first().json.site_url) || '';\nconst unsubEmail = ($('Vars').first().json.unsubscribe_email) || 'privacidad@rccelta.es';\nconst out = [];\nfor (const item of $input.all()) {\n  const d = item.json;\n  const greeting = d.first_name ? '¡Hola ' + d.first_name + ', ya están a la venta!' : '¡Ya están a la venta!';\n  const subject  = '🎟️ ¡Entradas en ' + d.grada_name + ' para ' + d.event_name + '!';\n  const unsubMail = 'mailto:' + unsubEmail\n    + '?subject=' + encodeURIComponent('Baja de suscripción')\n    + '&body='    + encodeURIComponent('Por favor, da de baja la suscripción del correo ' + d.email);\n\n  const html =\n    '<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>¡Entradas disponibles! — RC Celta</title></head>'\n  + '<body style=\"margin:0; padding:0; background:#f4f6f9; font-family:Arial, sans-serif; color:#1a2a3a;\">'\n  + '<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background:#f4f6f9;\"><tr><td align=\"center\" style=\"padding:32px 16px;\">'\n  + '<table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"max-width:600px; background:#ffffff; border-radius:12px;\">'\n  + '<tr><td align=\"center\" style=\"background:#0d1b2a; padding:28px 24px; border-radius:12px 12px 0 0;\">'\n  +   '<div style=\"color:#ffffff; font-size:22px; font-weight:bold; letter-spacing:0.5px;\">RC CELTA DE VIGO</div>'\n  +   '<div style=\"padding-top:6px; color:#6cace4; font-size:11px; font-weight:bold; letter-spacing:2px; text-transform:uppercase;\">Aviso de entradas</div>'\n  + '</td></tr>'\n  + '<tr><td align=\"center\" style=\"background:#d50032; color:#ffffff; padding:14px 24px; font-size:14px; font-weight:bold; letter-spacing:2px; text-transform:uppercase;\">🎟️ ¡Entradas disponibles!</td></tr>'\n  + '<tr><td style=\"padding:36px 40px 8px 40px;\">'\n  +   '<h1 style=\"margin:0 0 14px 0; font-size:28px; line-height:1.2; font-weight:bold; color:#1a2a3a;\">' + greeting + '</h1>'\n  +   '<p style=\"margin:0 0 24px 0; font-size:16px; line-height:1.6; color:#4a5e70;\">Hay entradas disponibles en tu grada favorita. Date prisa, vuelan rápido.</p>'\n  + '</td></tr>'\n  + '<tr><td style=\"padding:0 40px 28px 40px;\">'\n  +   '<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background:#f4f6f9; border-radius:10px; border-left:4px solid #6cace4;\"><tr><td style=\"padding:20px 22px;\">'\n  +     '<div style=\"font-size:11px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; color:#8fa3b8; margin-bottom:4px;\">Tu partido</div>'\n  +     '<div style=\"font-size:20px; font-weight:bold; color:#1a2a3a; margin-bottom:14px;\">' + d.event_name + '</div>'\n  +     '<div style=\"font-size:11px; font-weight:bold; letter-spacing:1.5px; text-transform:uppercase; color:#8fa3b8; margin-bottom:3px;\">Grada</div>'\n  +     '<div style=\"font-size:15px; font-weight:600; color:#1a2a3a; margin-bottom:14px;\">' + d.grada_name + '</div>'\n  +     '<div style=\"font-size:11px; font-weight:bold; letter-spacing:1.5px; text-transform:uppercase; color:#8fa3b8; margin-bottom:3px;\">Disponibilidad</div>'\n  +     '<div style=\"font-size:15px; font-weight:600; color:#2ea043;\">' + d.available + ' localidades</div>'\n  +   '</td></tr></table>'\n  + '</td></tr>'\n  + '<tr><td align=\"center\" style=\"padding:0 40px 12px 40px;\">'\n  +   '<a href=\"' + d.purchase_url + '\" style=\"display:inline-block; padding:18px 48px; font-size:16px; font-weight:bold; letter-spacing:2px; color:#ffffff; text-decoration:none; background:#d50032; border-radius:10px;\">COMPRAR ENTRADAS</a>'\n  + '</td></tr>'\n  + '<tr><td align=\"center\" style=\"padding:0 40px 32px 40px; font-size:13px; line-height:1.55; color:#8fa3b8;\">⏰ Las entradas se agotan rápido. Recomendamos comprarlas hoy mismo.</td></tr>'\n  + '<tr><td style=\"padding:0 40px;\"><div style=\"border-top:1px solid #e4eaf1; height:1px; line-height:1px; font-size:0;\">&nbsp;</div></td></tr>'\n  + '<tr><td style=\"padding:24px 40px 40px 40px;\">'\n  +   '<p style=\"margin:0 0 10px 0; font-size:14px; line-height:1.6; color:#4a5e70;\">Recibes este aviso porque te suscribiste al servicio <strong>¡Avísame!</strong> del RC Celta de Vigo para esta grada y este partido.</p>'\n  +   '<p style=\"margin:0; font-size:14px; line-height:1.6; color:#4a5e70;\">¡Nos vemos en Balaídos! 💙</p>'\n  + '</td></tr></table>'\n  + '<table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"max-width:600px;\">'\n  + '<tr><td align=\"center\" style=\"padding:24px 16px 0 16px; font-size:12px; line-height:1.55; color:#8fa3b8;\">'\n  +   '<p style=\"margin:0 0 6px 0;\">Real Club Celta de Vigo, S.A.D. — CIF A-36603587<br>Estadio de Balaídos, Avenida de Balaídos s/n, 36210 Vigo (Pontevedra), España</p>'\n  +   '<p style=\"margin:14px 0 0 0;\">'\n  +     '<a href=\"' + siteUrl + '/aviso-legal.html\" style=\"color:#8fa3b8;\">Aviso Legal</a> · '\n  +     '<a href=\"' + siteUrl + '/privacidad.html\" style=\"color:#8fa3b8;\">Privacidad</a> · '\n  +     '<a href=\"' + siteUrl + '/cookies.html\" style=\"color:#8fa3b8;\">Cookies</a> · '\n  +     '<a href=\"' + unsubMail + '\" style=\"color:#8fa3b8;\">Cancelar suscripción</a>'\n  +   '</p>'\n  +   '<p style=\"margin:10px 0 0 0; font-size:11px; color:#b0bdc9;\">© 2026 RC Celta de Vigo. Todos los derechos reservados.</p>'\n  + '</td></tr></table></td></tr></table></body></html>';\n\n  out.push({ json: { ...d, subject, html } });\n}\nreturn out;"
+      },
+      "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+      "name": "Build email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2240, -48]
+    },
+    {
+      "parameters": {
+        "operation": "sendHtml",
+        "fromEmail": "={{ $('Vars').first().json.mandrill_from_email }}",
+        "toEmail": "={{ $json.email }}",
+        "options": {
+          "html": "={{ $json.html }}",
+          "subject": "={{ $json.subject }}",
+          "fromName": "={{ $('Vars').first().json.mandrill_from_name }}"
+        }
+      },
+      "id": "f974d376-9ddd-470b-97ab-bc052545f71f",
+      "name": "Mandrill Send",
+      "type": "n8n-nodes-base.mandrill",
+      "typeVersion": 1,
+      "position": [2440, -48],
+      "credentials": {
+        "mandrillApi": {
+          "id": "ldOhTaztOdq8Xu75",
+          "name": "Mandrill account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://{{ $('Vars').first().json.mailchimp_dc }}.api.mailchimp.com/3.0/lists/{{ $('Vars').first().json.mailchimp_list_id }}/members/{{ $json.subscriber_hash }}/tags",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={ \"tags\": [{ \"name\": \"{{ $json.notified_tag }}\", \"status\": \"active\" }] }",
+        "options": {}
+      },
+      "id": "b2c3d4e5-f6a7-8901-2345-67890abcdef0",
+      "name": "Tag as notified",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2640, -48],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "PLEASE_CREATE_BASIC_AUTH_CRED",
+          "name": "Mailchimp Basic Auth (anystring:API_KEY)"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule (every 15 min)": {
+      "main": [[{ "node": "Vars", "type": "main", "index": 0 }]]
+    },
+    "Vars": {
+      "main": [[{ "node": "Mailchimp Members", "type": "main", "index": 0 }]]
+    },
+    "Mailchimp Members": {
+      "main": [[{ "node": "Aggregate members", "type": "main", "index": 0 }]]
+    },
+    "Aggregate members": {
+      "main": [[{ "node": "ONEBOX Auth", "type": "main", "index": 0 }]]
+    },
+    "ONEBOX Auth": {
+      "main": [[{ "node": "ONEBOX Sessions", "type": "main", "index": 0 }]]
+    },
+    "ONEBOX Sessions": {
+      "main": [[{ "node": "Filter by event_id", "type": "main", "index": 0 }]]
+    },
+    "Filter by event_id": {
+      "main": [[{ "node": "ONEBOX Availability", "type": "main", "index": 0 }]]
+    },
+    "ONEBOX Availability": {
+      "main": [[{ "node": "Gradas with availability", "type": "main", "index": 0 }]]
+    },
+    "Gradas with availability": {
+      "main": [[{ "node": "Find leads", "type": "main", "index": 0 }]]
+    },
+    "Find leads": {
+      "main": [[{ "node": "Build email", "type": "main", "index": 0 }]]
+    },
+    "Build email": {
+      "main": [[{ "node": "Mandrill Send", "type": "main", "index": 0 }]]
+    },
+    "Mandrill Send": {
+      "main": [[{ "node": "Tag as notified", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "corrected-1",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "4071b05234729c7bf9ac0a6113b942a250a549e93850ab4b2d2ed2d49d46bb9d"
+  },
+  "id": "Z9OoGsU94px8h0n6",
+  "tags": []
+}
